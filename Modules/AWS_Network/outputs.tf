@@ -1,10 +1,10 @@
 output "main_vpc_id" {
-  value = aws_vpc.terra_main_vpc.id
+  value = aws_vpc.main.id
 }
 
 
 output "main_vpc_cidr_block" {
-  value = aws_vpc.terra_main_vpc.cidr_block
+  value = aws_vpc.main.cidr_block
 }
 
 
@@ -17,6 +17,6 @@ output "private_subnets_ids" {
   value = aws_subnet.private_subnets[*].id
 }
 
-output "vpc_id" {
-  value = aws_vpc.main.id
+output "nat_ip" {
+  value = aws_eip.nat_ip.id
 }

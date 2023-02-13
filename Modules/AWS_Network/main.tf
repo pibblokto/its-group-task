@@ -2,11 +2,15 @@
 
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr
+  tags = {
+    Name        = "${var.project}-${var.environment}-main-vpc"
+  }
 }
 
 ### Subnets ###
 
 resource "aws_subnet" "private_subnets" {
+  vpc_id       = aws_vpc.main.id
   count        = length(var.private_subnets)
   cidr_block   = element(var.private_subnets, count.index)
   tags = {
@@ -16,6 +20,7 @@ resource "aws_subnet" "private_subnets" {
 }
 
 resource "aws_subnet" "public_subnets" {
+  vpc_id       = aws_vpc.main.id
   count        = length(var.private_subnets)
   cidr_block   = element(var.private_subnets, count.index)
   tags = {
@@ -52,17 +57,7 @@ resource "aws_nat_gateway" "nat" {
 ### Route tables ###
 
 resource "aws_route_table" "private_route_table" {
-  vpc_id = aws_vpc.example.id
-
-  route = []
-
-  tags = {
-    Name = "example"
-  }
-}
-
-resource "aws_route_table" "private_route_table" {
-  vpc_id = aws_vpc.example.id
+  vpc_id = aws_vpc.main.id
   
   route {
     cidr_block = "0.0.0.0/0"
@@ -75,7 +70,7 @@ resource "aws_route_table" "private_route_table" {
 }
 
 resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.example.id
+  vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -91,12 +86,12 @@ resource "aws_route_table" "public_route_table" {
 
 resource "aws_route_table_association" "private_association" {
   count          = length(var.private_subnets)
-  subnet_id      = element(aws_subnet.private_subnets, count.index)
+  subnet_id      = element(aws_subnet.private_subnets[*].id, count.index)
   route_table_id = aws_route_table.private_route_table.id
 }
 
 resource "aws_route_table_association" "public_association" {
   count          = length(var.public_subnets)
-  subnet_id      = element(aws_subnet.public_subnets, count.index)
+  subnet_id      = element(aws_subnet.public_subnets[*].id, count.index)
   route_table_id = aws_route_table.public_route_table.id
 }

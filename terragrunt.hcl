@@ -27,9 +27,9 @@ remote_state {
 
 
   config = {
-
-    bucket  = "project-terraform-tfstate"
-    region  = "eu-central-1"
+    #project-terraform-tfstate
+    bucket  = "state-bucket-asidj23ad"
+    region  = "us-east-1"
     key     = "${path_relative_to_include()}/terraform.tfstate"
     encrypt = true
 
