@@ -1,5 +1,15 @@
+### Data ###
+
+data "aws_availability_zones" "alive" {
+  state = "available"
+}
+
+locals {
+  az_amount = length(data.aws_availability_zones.alive.names)
+}
+
 ### VPC ###
-data "aws_availability_zones" "alive" {}
+
 
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr
@@ -14,7 +24,7 @@ resource "aws_subnet" "private_subnets" {
   vpc_id            = aws_vpc.main.id
   count             = length(var.private_subnets)
   cidr_block        = element(var.private_subnets, count.index)
-  availability_zone = data.aws_availability_zones.alive.names[count.index]
+  availability_zone = data.aws_availability_zones.alive.names[count.index % local.az_amount]
   tags = {
     Name = "${var.project}-${var.environment}-private-subnet-${count.index + 1}"
 
@@ -25,7 +35,7 @@ resource "aws_subnet" "public_subnets" {
   vpc_id                  = aws_vpc.main.id
   count                   = length(var.public_subnets)
   cidr_block              = element(var.public_subnets, count.index)
-  availability_zone       = data.aws_availability_zones.alive.names[count.index]
+  availability_zone       = data.aws_availability_zones.alive.names[count.index % local.az_amount]
   map_public_ip_on_launch = var.map_public_ip_on_launch
 
   tags = {
