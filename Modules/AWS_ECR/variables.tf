@@ -11,15 +11,18 @@ variable "environment" {
 }
 
 variable "ecr_name" {
-    type = string
+  description = "ECR name"
+  type        = string
+  default     = ""
 }
 
 variable "tag_mutability" {
-    type = string
-    default = "MUTABLE"
-    validation {
+  description = "ECR tags mutability"
+  type        = string
+  default     = "MUTABLE"
+  validation {
     condition     = contains(["MUTABLE", "IMMUTABLE"], var.tag_mutability)
     error_message = "Valid values for var: tag_mutability are (MUTABLE, IMMUTABLE)."
-  } 
+  }
 }
 
