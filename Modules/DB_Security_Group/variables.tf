@@ -16,17 +16,6 @@ variable "environment" {
   default     = ""
 }
 
-variable "ports_for_alb_sg" {
-  description = "List of ingress ports for Application Load Balancer security group"
-  type        = list(string)
-  default     = []
-}
-
-variable "ports_for_application_sg" {
-  description = "List of ingress ports for application security group"
-  type        = list(string)
-  default     = []
-}
 
 variable "ports_for_database_sg" {
   description = "List of ingress ports for database security group"
@@ -34,3 +23,8 @@ variable "ports_for_database_sg" {
   default     = []
 }
 
+variable "app_security_group_id" {
+  description = "Application security group ID"
+  type        = string
+  default     = ""
+}
