@@ -9,6 +9,4 @@ terraform {
   source = "${dirname(find_in_parent_folders())}//Modules//AWS_ECR"
 }
 
-inputs = {
-  ecr_name = "main-ecr"
-}
+inputs = {}

@@ -11,7 +11,6 @@ terraform {
 
 
 inputs = {
-  bucket_name = "static-files-django-app-bucket"
   acl = "private"
   versioning_status = "Enabled"
 }

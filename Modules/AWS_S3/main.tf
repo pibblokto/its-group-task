@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "main" {
-  bucket = "${var.project}-${var.environment}-${var.bucket_name}"
+  bucket = "${var.project}-${var.environment}-static-content-bucket"
 
 }
 

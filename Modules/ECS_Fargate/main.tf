@@ -21,47 +21,110 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_s3_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy" "parameter_store_access_policy" {
+  name = "parameter_store_access"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ssm:GetParameters",
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:ssm:us-east-1:999360891534:parameter//team-task/production/*"
+      },
+    ]
+  })
+}
+
+
 // -----------------------------------------------------
 resource "aws_ecs_cluster" "aws-ecs-cluster" {
-  name = "${var.project}-${var.environment}-ecs"
+  name = "${var.project}-${var.environment}-cluster"
   tags = {
-    Name = "${var.project}-${var.environment}-ecs"
+    Name = "${var.project}-${var.environment}-cluster"
   }
 }
 
+
 resource "aws_ecs_task_definition" "aws-ecs-task" {
-  family = "${var.project}-${var.environment}-task"
-
-  container_definitions    = <<DEFINITION
-
-  [
-    {
-      "name": "nginx",
-      "image": "nginx:alpine",
-      "portMappings": [
-        {
-          "containerPort": 80,
-          "hostPort": 80
-        }
-      ],
-      "networkMode": "awsvpc",
-      "memory": 1024,
-      "cpu": 1024
-    }
-  ]
-DEFINITION
+  family                   = "${var.project}-${var.environment}-task-definiton"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
   requires_compatibilities = [var.launch_type]
   network_mode             = var.network_mode
   memory                   = var.memory
   cpu                      = var.cpu
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "${var.init_container_name}"
+      image     = "${var.ecr_uri}"
+      essential = false
+      command   = var.init_container_command
+      environment = [
+        { "name" : "DEBUG", "value" : "False" },
+        { "name" : "DJANGO_ALLOWED_HOSTS", "value" : "*" },
+        { "name" : "DEVELOPMENT_MODE", "value" : "False" }
+      ]
+      secrets = [
+        { "name" : "DATABASE_URL", "valueFrom" : "/team-task/production/database_url" },
+        { "name" : "DJANGO_SECRET_KEY", "valueFrom" : "/team-task/production/django_secret_key" }
+      ]
+    },
+    {
+      name      = "${var.main_container_name}"
+      image     = "${var.ecr_uri}"
+      essential = true
+      environment = [
+        { "name" : "DEBUG", "value" : "False" },
+        { "name" : "DJANGO_ALLOWED_HOSTS", "value" : "*" },
+        { "name" : "DEVELOPMENT_MODE", "value" : "False" }
+      ]
+      secrets = [
+        { "name" : "DATABASE_URL", "valueFrom" : "/team-task/production/database_url" },
+        { "name" : "DJANGO_SECRET_KEY", "valueFrom" : "/team-task/production/django_secret_key" }
+      ]
+      portMappings = [
+        {
+          containerPort = var.main_container_port
+          hostPort      = var.main_container_port
+        }
+      ]
+      depends_on = [
+        { "containerName" : "${var.init_container_name}", "condition" : "${var.init_container_execution_condition}" }
+      ]
+    }
+  ])
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   tags = {
-    Name = "${var.project}-${var.environment}-task"
+    Name = "${var.project}-${var.environment}-task-definition"
   }
-}
 
+  depends_on = [
+    aws_ecs_cluster.aws-ecs-cluster
+  ]
+
+}
 
 
 resource "aws_ecs_service" "aws-ecs-service" {
@@ -75,14 +138,48 @@ resource "aws_ecs_service" "aws-ecs-service" {
 
   network_configuration {
 
-    subnets         = var.subnetId
-    security_groups = var.ecs_security_groups
+    subnets          = var.subnets
+    security_groups  = var.ecs_security_groups
+    assign_public_ip = false
   }
 
   load_balancer {
     target_group_arn = var.alb_target_group_arn
-    container_name   = var.container_name
-    container_port   = var.container_port
+    container_name   = var.main_container_name
+    container_port   = var.main_container_port
+  }
+
+}
+
+
+
+#-------------- ECS service targetting -----------------------
+
+resource "aws_appautoscaling_target" "ecs_target" {
+  max_capacity       = var.max_capacity
+  min_capacity       = var.min_capacity
+  resource_id        = "service/${aws_ecs_cluster.aws-ecs-cluster.name}/${aws_ecs_service.aws-ecs-service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+
+}
+
+
+
+#-------------- ECS service auto scaling policy -----------------------
+
+resource "aws_appautoscaling_policy" "ecs_policy" {
+  name               = "${var.project}-${var.environment}-auto-scaling-policy"
+  policy_type        = var.appautoscaling_policy_type
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value = var.target_value
+    predefined_metric_specification {
+      predefined_metric_type = var.predefined_metric_type
+    }
   }
 
 }

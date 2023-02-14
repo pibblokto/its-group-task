@@ -19,7 +19,7 @@ variable "ecr_name" {
 variable "tag_mutability" {
   description = "ECR tags mutability"
   type        = string
-  default     = "MUTABLE"
+  default     = "IMMUTABLE"
   validation {
     condition     = contains(["MUTABLE", "IMMUTABLE"], var.tag_mutability)
     error_message = "Valid values for var: tag_mutability are (MUTABLE, IMMUTABLE)."
