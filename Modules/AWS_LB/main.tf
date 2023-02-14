@@ -8,6 +8,7 @@ resource "aws_lb" "application_load_balancer" {
   tags = {
     Name = "${var.project}-${var.environment}-alb"
   }
+  depends_on = [aws_lb_target_group.target_group]
 }
 
 resource "aws_lb_target_group" "target_group" {
@@ -27,7 +28,6 @@ resource "aws_lb_target_group" "target_group" {
     healthy_threshold   = var.health_check["healthy_threshold"]
     unhealthy_threshold = var.health_check["unhealthy_threshold"]
   }
-  depends_on = [aws_lb.application_load_balancer]
 
   tags = {
     Name = "${var.project}-${var.environment}-tg"

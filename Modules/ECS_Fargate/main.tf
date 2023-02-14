@@ -32,7 +32,7 @@ resource "aws_iam_role_policy" "parameter_store_access_policy" {
   role = aws_iam_role.ecs_task_execution_role.id
 
   # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
+  # Terraform expression result to valid JSON syntax.           "arn:aws:ssm:us-east-1:999360891534:parameter/DJANGO_SECRET_KEY"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -40,8 +40,11 @@ resource "aws_iam_role_policy" "parameter_store_access_policy" {
         Action = [
           "ssm:GetParameters",
         ]
-        Effect   = "Allow"
-        Resource = "arn:aws:ssm:us-east-1:999360891534:parameter//team-task/production/*"
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:ssm:us-east-1:999360891534:parameter/${var.project}-${var.environment}_*"
+
+        ]
       },
     ]
   })
@@ -78,8 +81,8 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
         { "name" : "DEVELOPMENT_MODE", "value" : "False" }
       ]
       secrets = [
-        { "name" : "DATABASE_URL", "valueFrom" : "/team-task/production/database_url" },
-        { "name" : "DJANGO_SECRET_KEY", "valueFrom" : "/team-task/production/django_secret_key" }
+        { "name" : "DATABASE_URL", "valueFrom" : "${var.project}-${var.environment}_database_url" },
+        { "name" : "DJANGO_SECRET_KEY", "valueFrom" : "${var.project}-${var.environment}_django_secret_key" }
       ]
     },
     {
@@ -92,8 +95,8 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
         { "name" : "DEVELOPMENT_MODE", "value" : "False" }
       ]
       secrets = [
-        { "name" : "DATABASE_URL", "valueFrom" : "/team-task/production/database_url" },
-        { "name" : "DJANGO_SECRET_KEY", "valueFrom" : "/team-task/production/django_secret_key" }
+        { "name" : "DATABASE_URL", "valueFrom" : "${var.project}-${var.environment}_database_url" },
+        { "name" : "DJANGO_SECRET_KEY", "valueFrom" : "${var.project}-${var.environment}_django_secret_key" }
       ]
       portMappings = [
         {

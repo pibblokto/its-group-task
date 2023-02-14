@@ -1,15 +1,15 @@
 #------------- Data Sources -------------#
 
 data "aws_ssm_parameter" "postgres_db" {
-  name = "/${var.project}/${var.environment}/${var.postgres_db}"
+  name = "${var.project}-${var.environment}_${var.postgres_db}"
 }
 
 data "aws_ssm_parameter" "database_username" {
-  name = "/${var.project}/${var.environment}/${var.database_username}"
+  name = "${var.project}-${var.environment}_${var.database_username}"
 }
 
 data "aws_ssm_parameter" "database_password" {
-  name = "/${var.project}/${var.environment}/${var.database_password}"
+  name = "${var.project}-${var.environment}_${var.database_password}"
 }
 
 

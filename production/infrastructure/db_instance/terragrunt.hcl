@@ -45,15 +45,12 @@ inputs = {
 
 
   # DB Instance
-  db_name                         = "itssite_db"
   postgres_db                     = "postgres_db"
   database_username               = "database_username"
   database_password               = "database_password"
   engine                          = "postgres"
   engine_version                  = "13.7"
   multi_az                        = false
-  username                        = "postgres"
-  password                        = "supersecretpwd"
   instance_class                  = "db.t3.micro"
   storage_type                    = "gp2"
   allocated_storage               = 20

@@ -99,6 +99,7 @@ variable "ssl_policy" {
 variable "certificate_arn" {
   type        = string
   description = "SSL certificate ARN"
+  sensitive   = true
   default     = ""
 }
 
