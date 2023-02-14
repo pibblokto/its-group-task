@@ -11,8 +11,12 @@ dependency "vpc" {
     
     private_subnets_ids = [
       "subnet-00000000",
-      "subnet-00000001",
-      "subnet-00000002"
+      "subnet-00000001"
+    ]
+
+    public_subnets_ids = [
+      "subnet-00000003",
+      "subnet-00000004"
     ]
   }
 }
