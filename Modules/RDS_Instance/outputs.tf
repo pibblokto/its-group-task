@@ -1,3 +1,40 @@
+#------------- RDS Option Group -------------#
+output "option_group_id" {
+  value = aws_db_option_group.database_option_group.id
+}
+
+output "option_group_arn" {
+  value = aws_db_option_group.database_option_group.arn
+}
+
+
+
+#------------- RDS Parameter Group -------------#
+output "parameter_group_id" {
+  value = aws_db_parameter_group.db_parameter_group.id
+}
+
+output "parameter_group_arn" {
+  value = aws_db_parameter_group.db_parameter_group.arn
+}
+
+
+
+
+#------------- RDS Subnet Group -------------#
+output "subnet_group_id" {
+  value = aws_db_subnet_group.db_subnet_group.id
+}
+
+output "subnet_group_arn" {
+  value = aws_db_subnet_group.db_subnet_group.arn
+}
+
+
+
+
+#------------- RDS Instance -------------#
+
 output "database_address" {
   value     = aws_db_instance.db_instance.address
   sensitive = true

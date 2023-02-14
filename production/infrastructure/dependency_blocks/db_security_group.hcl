@@ -7,6 +7,6 @@ dependency "db_security_group" {
 
   mock_outputs = {
 
-    atabase_security_group_id = "sg-00000002"
+    database_security_group_id = "sg-00000002"
   }
 }

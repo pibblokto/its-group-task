@@ -10,6 +10,46 @@ variable "environment" {
   default     = ""
 }
 
+
+#------------- RDS Option Group -------------#
+
+variable "engine_name" {
+  description = "Specifies the name of the engine that this option group should be associated with"
+  type        = string
+  default     = ""
+}
+
+variable "major_engine_version" {
+  description = "Specifies the major version of the engine that this option group should be associated with"
+  type        = string
+  default     = ""
+}
+
+
+
+
+#------------- RDS Parameter Group -------------#
+variable "family" {
+  description = "The family of the DB parameter group"
+  type        = string
+  default     = ""
+}
+
+
+
+
+#------------- RDS Subnet Group -------------#
+variable "subnet_ids" {
+  description = "A list of VPC subnet IDs"
+  type        = list(string)
+  default     = []
+}
+
+
+
+
+#------------- RDS Instance -------------#
+
 variable "postgres_db" {
   type        = string
   description = "Postgres DB name"
@@ -96,12 +136,6 @@ variable "network_type" {
   default     = ""
 }
 
-variable "db_subnet_group_name" {
-  description = "Name of DB subnet group"
-  type        = string
-  default     = ""
-}
-
 variable "publicly_accessible" {
   description = "Bool to control if instance is publicly accessible"
   type        = bool
@@ -136,12 +170,6 @@ variable "performance_insights_enabled" {
   description = "Specifies whether Performance Insights are enabled"
   type        = bool
   default     = false
-}
-
-variable "parameter_group_name" {
-  description = "Name of the DB parameter group to associate"
-  type        = string
-  default     = ""
 }
 
 variable "backup_retention_period" {
@@ -216,8 +244,3 @@ variable "maintenance_window" {
   default     = ""
 }
 
-variable "option_group_name" {
-  description = "Name of the DB option group to associate"
-  type        = string
-  default     = ""
-}
