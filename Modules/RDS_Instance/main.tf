@@ -1,11 +1,24 @@
+data "aws_ssm_parameter" "postgres_db" {
+  name = "/${var.project}/${var.environment}/${var.postgres_db}"
+}
+
+data "aws_ssm_parameter" "database_username" {
+  name = "/${var.project}/${var.environment}/${var.database_username}"
+}
+
+data "aws_ssm_parameter" "database_password" {
+  name = "/${var.project}/${var.environment}/${var.database_password}"
+}
+
+
 resource "aws_db_instance" "db_instance" {
   identifier                      = "${var.project}-${var.environment}-database"
-  db_name                         = var.db_name
+  db_name                         = data.aws_ssm_parameter.postgres_db.value
   engine                          = var.engine
   engine_version                  = var.engine_version
   multi_az                        = var.multi_az
-  username                        = var.username
-  password                        = var.password
+  username                        = data.aws_ssm_parameter.database_username.value
+  password                        = data.aws_ssm_parameter.database_password.value
   instance_class                  = var.instance_class
   storage_type                    = var.storage_type
   allocated_storage               = var.allocated_storage

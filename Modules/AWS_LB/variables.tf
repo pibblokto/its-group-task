@@ -10,15 +10,15 @@ variable "environment" {
   default     = ""
 }
 
-variable "subnetId" {
+variable "subnets" {
   description = "Security_groups"
   type        = list(string)
   default     = []
 }
-variable "vpcId" {
+variable "vpc_id" {
   description = "VPC"
   type        = string
-
+  default     = ""
 }
 
 variable "target_type" {
@@ -39,14 +39,77 @@ variable "load_balancer_type" {
   description = "Type of load balancer"
   default     = "application"
 }
-variable "http_port" {
-  type        = string
+variable "target_group_port" {
+  type        = number
   description = "Port"
-  default     = 80
+  default     = null
 }
-variable "securityGroups" {
+variable "security_groups" {
   description = "Security groups used for ECS service"
-  type = list(string)
-  default = null
+  type        = list(string)
+  default     = []
 }
 
+variable "target_group_protocol" {
+  type        = string
+  description = "Target group protocol"
+  default     = ""
+}
+
+variable "deregistration_delay" {
+  type        = number
+  description = "Target group deregistration delay"
+  default     = null
+}
+
+variable "health_check" {
+  type = object({
+    path                = string
+    matcher             = string
+    interval            = number
+    timeout             = number
+    healthy_threshold   = number
+    unhealthy_threshold = number
+  })
+
+  description = "Target group health check options"
+
+  default = {
+    path                = ""
+    matcher             = ""
+    interval            = null
+    timeout             = null
+    healthy_threshold   = null
+    unhealthy_threshold = null
+  }
+}
+
+variable "https_port" {
+  type        = string
+  description = "ALB HTTPS port"
+  default     = ""
+}
+
+variable "ssl_policy" {
+  type        = string
+  description = "SSL policy name"
+  default     = ""
+}
+
+variable "certificate_arn" {
+  type        = string
+  description = "SSL certificate ARN"
+  default     = ""
+}
+
+variable "alb_redirection_port" {
+  type        = string
+  description = "ALB redirection port"
+  default     = ""
+}
+
+variable "alb_redirection_port_protocol" {
+  type        = string
+  description = "ALB redirection port protocol"
+  default     = ""
+}

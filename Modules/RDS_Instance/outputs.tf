@@ -1,5 +1,6 @@
 output "database_address" {
-  value = aws_db_instance.db_instance.address
+  value     = aws_db_instance.db_instance.address
+  sensitive = true
 }
 
 output "database_arn" {
@@ -7,7 +8,8 @@ output "database_arn" {
 }
 
 output "database_endpoint" {
-  value = aws_db_instance.db_instance.endpoint
+  value     = aws_db_instance.db_instance.endpoint
+  sensitive = true
 }
 
 output "database_backup_window" {
@@ -23,7 +25,8 @@ output "database_instance_id" {
 }
 
 output "database_instance_db_name" {
-  value = aws_db_instance.db_instance.db_name
+  value     = aws_db_instance.db_instance.db_name
+  sensitive = true
 }
 
 output "database_identifier" {

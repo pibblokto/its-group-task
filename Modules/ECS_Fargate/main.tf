@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "ecs-task-execution-role"
+  name               = "${var.project}-${var.environment}-ecs-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
 }
 
@@ -25,14 +25,14 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
 resource "aws_ecs_cluster" "aws-ecs-cluster" {
   name = "${var.project}-${var.environment}-ecs"
   tags = {
-    Name        = "${var.project}-${var.environment}-ecs"
+    Name = "${var.project}-${var.environment}-ecs"
   }
 }
 
 resource "aws_ecs_task_definition" "aws-ecs-task" {
   family = "${var.project}-${var.environment}-task"
 
-  container_definitions = <<DEFINITION
+  container_definitions    = <<DEFINITION
 
   [
     {
@@ -58,7 +58,7 @@ DEFINITION
   task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
   tags = {
-    Name        = "${var.project}-${var.environment}-task"
+    Name = "${var.project}-${var.environment}-task"
   }
 }
 
@@ -75,7 +75,7 @@ resource "aws_ecs_service" "aws-ecs-service" {
 
   network_configuration {
 
-    subnets          = var.subnetId
+    subnets         = var.subnetId
     security_groups = var.ecs_security_groups
   }
 
