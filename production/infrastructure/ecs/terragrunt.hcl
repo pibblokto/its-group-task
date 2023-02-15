@@ -31,7 +31,16 @@ include "alb" {
   merge_strategy = "deep"
 }
 
+include "s3" {
+  path           = "..//dependency_blocks/s3.hcl"
+  expose         = true
+  merge_strategy = "deep"
+}
+
 inputs = {
+
+  # S3 Bucket
+  s3_bucket_arn = dependency.s3.outputs.s3_bucket_arn
 
   # Task Definition
   launch_type = "FARGATE"
@@ -50,7 +59,7 @@ inputs = {
   scheduling_strategy = "REPLICA"
   desired_count = 2
   subnets = dependency.vpc.outputs.private_subnets_ids
-  ecs_security_groups = [dependency.app_security_group.outputs.application_security_group_id]
+  ecs_security_groups = dependency.app_security_group.outputs.application_security_group_id
   alb_target_group_arn = dependency.alb.outputs.alb_target_group_arn
 
   # ECS Service Autoscaling
@@ -67,6 +76,7 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//s3",
     "..//vpc",
     "..//alb_security_group",
     "..//app_security_group",

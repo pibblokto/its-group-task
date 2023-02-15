@@ -10,6 +10,24 @@ variable "environment" {
   default     = ""
 }
 
+variable "aws_region" {
+  description = "AWS Region to provision infrastructure"
+  type        = string
+  default     = ""
+}
+
+variable "account_id" {
+  description = "AWS account ID to provision infrastructure"
+  type        = string
+  default     = ""
+}
+
+variable "s3_bucket_arn" {
+  description = "S3 Bucket ARN"
+  type        = string
+  default     = ""
+}
+
 variable "subnets" {
   description = "Subnets used for ECS service"
   type        = list(string)

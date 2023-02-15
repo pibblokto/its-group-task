@@ -6,7 +6,7 @@ include "root" {
 
 
 terraform {
-  source = "${dirname(find_in_parent_folders())}//Modules//DB_Security_Group"
+  source = "${dirname(find_in_parent_folders())}//Modules//Security_Groups"
 }
 
 include "envcommon" {
@@ -25,7 +25,11 @@ include "app_security_group" {
   merge_strategy = "deep"
 }
 
+
+
+
 inputs = {
+
   vpc_id = dependency.vpc.outputs.main_vpc_id
 
   ports_for_database_sg = ["5432"]

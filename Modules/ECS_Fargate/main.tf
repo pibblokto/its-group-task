@@ -22,17 +22,10 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_s3_policy" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}
-
 resource "aws_iam_role_policy" "parameter_store_access_policy" {
   name = "parameter_store_access"
   role = aws_iam_role.ecs_task_execution_role.id
 
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.           "arn:aws:ssm:us-east-1:999360891534:parameter/DJANGO_SECRET_KEY"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -42,9 +35,29 @@ resource "aws_iam_role_policy" "parameter_store_access_policy" {
         ]
         Effect = "Allow"
         Resource = [
-          "arn:aws:ssm:us-east-1:999360891534:parameter/${var.project}-${var.environment}_*"
+          "arn:aws:ssm:${var.aws_region}:${var.account_id}:parameter/${var.project}-${var.environment}_*"
 
         ]
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "s3_bucket_access_policy" {
+  name = "s3_bucket_access_policy"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:*",
+          "s3-object-lambda:*",
+        ]
+        Effect   = "Allow"
+        Resource = "${var.s3_bucket_arn}/*"
+
       },
     ]
   })

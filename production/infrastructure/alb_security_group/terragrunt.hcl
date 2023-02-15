@@ -6,7 +6,7 @@ include "root" {
 
 
 terraform {
-  source = "${dirname(find_in_parent_folders())}//Modules//ALB_Security_Group"
+  source = "${dirname(find_in_parent_folders())}//Modules//Security_Groups"
 }
 
 include "envcommon" {
@@ -21,6 +21,7 @@ include "vpc" {
 
 
 inputs = {
+  
   vpc_id = dependency.vpc.outputs.main_vpc_id
 
   ports_for_alb_sg = ["80", "443"]
