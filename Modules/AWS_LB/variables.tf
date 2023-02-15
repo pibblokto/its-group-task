@@ -1,68 +1,81 @@
 variable "project" {
   description = "Project name"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = ""
+  default     = null
 }
 
-variable "subnets" {
-  description = "Security_groups"
-  type        = list(string)
-  default     = []
-}
-variable "vpc_id" {
-  description = "VPC"
-  type        = string
-  default     = ""
-}
 
-variable "target_type" {
-  type        = string
-  description = "Target type for load balancer target group"
-  default     = "ip"
-}
 
+
+#--------- Application Load Balancer ---------#
 
 variable "internal" {
-  type        = bool
   description = "Flag to indicate if load balancer is internal"
+  type        = bool
   default     = false
 }
 
 variable "load_balancer_type" {
-  type        = string
   description = "Type of load balancer"
+  type        = string
   default     = "application"
 }
-variable "target_group_port" {
-  type        = number
-  description = "Port"
-  default     = null
-}
-variable "security_groups" {
-  description = "Security groups used for ECS service"
+
+variable "subnets" {
+  description = "List of subnets for ALB"
   type        = list(string)
   default     = []
 }
 
-variable "target_group_protocol" {
-  type        = string
-  description = "Target group protocol"
-  default     = ""
+variable "security_groups" {
+  description = "List of security groups used for ALB"
+  type        = list(string)
+  default     = []
 }
 
-variable "deregistration_delay" {
-  type        = number
-  description = "Target group deregistration delay"
+
+
+
+#--------- Application Load Balancer Target Group ---------#
+
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
   default     = null
 }
 
+variable "target_type" {
+  description = "Target type for load balancer target group"
+  type        = string
+  default     = "ip"
+}
+
+variable "target_group_port" {
+  description = "Target Group port"
+  type        = number
+  default     = 8000
+}
+
+variable "target_group_protocol" {
+  description = "Target group protocol"
+  type        = string
+  default     = "HTTP"
+}
+
+variable "deregistration_delay" {
+  description = "Target group deregistration delay"
+  type        = number
+  default     = 120
+}
+
 variable "health_check" {
+  description = "Target group health check options"
   type = object({
     path                = string
     matcher             = string
@@ -72,45 +85,53 @@ variable "health_check" {
     unhealthy_threshold = number
   })
 
-  description = "Target group health check options"
-
   default = {
-    path                = ""
-    matcher             = ""
-    interval            = null
-    timeout             = null
-    healthy_threshold   = null
-    unhealthy_threshold = null
+    path                = "/"
+    matcher             = "200"
+    interval            = 15
+    timeout             = 10
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
   }
 }
 
+
+
+
+#--------- Application Load Balancer HTTPS Listener ---------#
+
 variable "https_port" {
-  type        = string
   description = "ALB HTTPS port"
-  default     = ""
+  type        = string
+  default     = "443"
 }
 
 variable "ssl_policy" {
-  type        = string
   description = "SSL policy name"
-  default     = ""
+  type        = string
+  default     = "ELBSecurityPolicy-2016-08"
 }
 
 variable "certificate_arn" {
-  type        = string
   description = "SSL certificate ARN"
+  type        = string
   sensitive   = true
   default     = ""
 }
 
+
+
+
+#--------- Application Load Balancer Redirection Listener ---------#
+
 variable "alb_redirection_port" {
-  type        = string
   description = "ALB redirection port"
-  default     = ""
+  type        = string
+  default     = "80"
 }
 
 variable "alb_redirection_port_protocol" {
-  type        = string
   description = "ALB redirection port protocol"
-  default     = ""
+  type        = string
+  default     = "HTTP"
 }

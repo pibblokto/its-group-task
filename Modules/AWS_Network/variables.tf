@@ -11,25 +11,25 @@ variable "environment" {
 }
 
 variable "vpc_cidr" {
+  description = "VPC CIDR Block to use"
   type        = string
-  description = "VPC ip range"
-  default     = ""
+  default     = null
 }
 
 variable "private_subnets" {
+  description = "Private subnets CIDR Blocks"
   type        = list(string)
-  description = "private subnets ranges"
   default     = []
 }
 
 variable "public_subnets" {
+  description = "Public subnets CIDR Blocks"
   type        = list(string)
-  description = "public subnets ranges"
   default     = []
 }
 
 variable "map_public_ip_on_launch" {
+  description = "Determine whether to map public ip on lauch in Public Subnets"
   type        = bool
-  description = "Determine if to map public ip on lauch"
-  default     = false
+  default     = true
 }

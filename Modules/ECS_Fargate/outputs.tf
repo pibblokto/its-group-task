@@ -6,8 +6,6 @@ output "task_definition_id" {
   value = aws_ecs_task_definition.aws-ecs-task.id
 }
 
-
-
 output "task_definition_arn" {
   value = aws_ecs_task_definition.aws-ecs-task.arn
 }

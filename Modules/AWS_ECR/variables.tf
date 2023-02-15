@@ -1,19 +1,13 @@
 variable "project" {
   description = "Project name"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = ""
-}
-
-variable "ecr_name" {
-  description = "ECR name"
-  type        = string
-  default     = ""
+  default     = null
 }
 
 variable "tag_mutability" {
@@ -30,4 +24,4 @@ variable "policy_json" {
   description = "Path to json file with lifecycle policy for ecr"
   type        = string
   default     = "./lifecycle_policy/policy.json"
-} 
+}
