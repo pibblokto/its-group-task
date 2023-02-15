@@ -1,21 +1,21 @@
 resource "aws_cloudfront_distribution" "cloudfront_distribution" {
   origin {
-    domain_name       = var.domain_name
-    origin_id         = var.origin_id
+    domain_name = var.domain_name
+    origin_id   = var.origin_id
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = var.origin_protocol_policy 
+      origin_ssl_protocols   = var.origin_ssl_protocols
+    }
   }
 
-  enabled             = var.enabled
-  is_ipv6_enabled     = var.is_ipv6_enabled
-  comment             = var.comment
-  default_root_object = var.default_root_object
+  enabled         = var.enabled
+  is_ipv6_enabled = var.is_ipv6_enabled
+  comment         = var.comment
 
-  logging_config {
-    include_cookies = var.logging_include_cookies
-    bucket          = var.logging_bucket
-    prefix          = var.logging_prefix
-  }
-
-  aliases = var.aliases
+  #aliases = var.aliases
 
   default_cache_behavior {
     allowed_methods  = var.default_allowed_methods
@@ -41,7 +41,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
   restrictions {
     geo_restriction {
       restriction_type = var.restriction_type
-      locations        = var.locations
+      #locations        = var.locations
     }
   }
 
@@ -51,6 +51,6 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
 
   viewer_certificate {
     cloudfront_default_certificate = var.cloudfront_default_certificate
-    acm_certificate_arn            = var.acm_certificate_arn
+    #acm_certificate_arn            = var.acm_certificate_arn
   }
 }
