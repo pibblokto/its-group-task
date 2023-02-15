@@ -40,6 +40,8 @@ inputs = {
   #acm_certificate_arn            = ""
   cloudfront_default_certificate = true
   default_query_strings          = false
+  origin_protocol_policy = "http-only"
+  origin_ssl_protocols   = ["TLSv1.2"]
 }
 
 dependencies {

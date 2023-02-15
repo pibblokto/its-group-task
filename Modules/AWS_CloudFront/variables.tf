@@ -130,3 +130,20 @@ variable "default_query_strings" {
   type    = bool
   default = false
 }
+
+variable "origin_protocol_policy" {
+    description = "Specifies the minimum SSL/TLS protocol that CloudFront uses when connecting to your origin over HTTPS"
+    type = string
+    default = "http-only"
+    validation {
+    condition     = contains(["http-only", "match-viewer", "https-only"], var.origin_protocol_policy)
+    error_message = "Valid values for var: tag_mutability are (http-only, match-viewer, https-only)."
+  }
+}
+
+variable "origin_ssl_protocols" {
+    description = ""
+    type = string
+    default = ["TLSv1.2"]
+}
+    
