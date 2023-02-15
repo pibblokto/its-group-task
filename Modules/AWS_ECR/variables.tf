@@ -29,5 +29,5 @@ variable "tag_mutability" {
 variable "policy_json" {
   description = "Path to json file with lifecycle policy for ecr"
   type        = string
-  default     = file("./lifecycle_policy.policy.json")
+  default     = "./lifecycle_policy.policy.json"
 } 

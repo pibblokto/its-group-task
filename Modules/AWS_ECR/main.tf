@@ -8,7 +8,7 @@ resource "aws_ecr_repository" "ecr" {
 
 resource "aws_ecr_lifecycle_policy" "lifecycle_policy" {
   repository = aws_ecr_repository.foo.name
-  policy = var.policy_json
+  policy = file(var.policy_json)
   tags = {
     Name = "${var.project}-${var.environment}-main-lifecycle-policy"
   }
