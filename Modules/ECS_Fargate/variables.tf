@@ -68,18 +68,6 @@ variable "ecr_uri" {
   default     = null
 }
 
-variable "init_container_name" {
-  description = "Init container name"
-  type        = string
-  default     = "migration"
-}
-
-variable "init_container_command" {
-  description = "Init container command"
-  type        = list(string)
-  default     = []
-}
-
 variable "main_container_name" {
   description = "Main container name"
   type        = string
@@ -90,12 +78,6 @@ variable "main_container_port" {
   description = "Main container port"
   type        = number
   default     = 8000
-}
-
-variable "init_container_execution_condition" {
-  description = "Init container execution condition"
-  type        = string
-  default     = "SUCCESS"
 }
 
 

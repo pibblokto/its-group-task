@@ -84,21 +84,6 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
 
   container_definitions = jsonencode([
     {
-      name      = "${var.init_container_name}"
-      image     = "${var.ecr_uri}"
-      essential = false
-      command   = var.init_container_command
-      environment = [
-        { "name" : "DEBUG", "value" : "False" },
-        { "name" : "DJANGO_ALLOWED_HOSTS", "value" : "*" },
-        { "name" : "DEVELOPMENT_MODE", "value" : "False" }
-      ]
-      secrets = [
-        { "name" : "DATABASE_URL", "valueFrom" : "${var.project}-${var.environment}_database_url" },
-        { "name" : "DJANGO_SECRET_KEY", "valueFrom" : "${var.project}-${var.environment}_django_secret_key" }
-      ]
-    },
-    {
       name      = "${var.main_container_name}"
       image     = "${var.ecr_uri}"
       essential = true
@@ -116,9 +101,6 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
           containerPort = var.main_container_port
           hostPort      = var.main_container_port
         }
-      ]
-      depends_on = [
-        { "containerName" : "${var.init_container_name}", "condition" : "${var.init_container_execution_condition}" }
       ]
     }
   ])

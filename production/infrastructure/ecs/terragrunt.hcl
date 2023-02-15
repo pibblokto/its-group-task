@@ -47,13 +47,9 @@ inputs = {
   network_mode = "awsvpc"
   cpu = "256"
   memory = "512"
-  init_container_name = "migration"
   ecr_uri = "piblokto/django_app:latest"
-  init_container_command = ["python", "manage.py", "migrate"]
-
   main_container_name = "django-app"
   main_container_port = 8000
-  init_container_execution_condition = "SUCCESS"
 
   # ECS Service
   scheduling_strategy = "REPLICA"
