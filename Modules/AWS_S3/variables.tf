@@ -1,27 +1,23 @@
 variable "project" {
   description = "Project name"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = ""
-}
-
-variable "bucket_name" {
-  description = "Name of the s3 bucket. Must be unique."
-  type        = string
-  default     = ""
+  default     = null
 }
 
 variable "acl" {
-  type    = string
-  default = ""
+  description = "The canned ACL to apply"
+  type        = string
+  default     = "private"
 }
 
 variable "versioning_status" {
-  type    = string
-  default = ""
+  description = "Defines whether to enable S3 bucket Versioning"
+  type        = string
+  default     = "Enabled"
 }

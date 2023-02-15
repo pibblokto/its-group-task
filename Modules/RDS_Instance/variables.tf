@@ -1,13 +1,13 @@
 variable "project" {
   description = "Project name"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = ""
+  default     = null
 }
 
 
@@ -16,13 +16,13 @@ variable "environment" {
 variable "engine_name" {
   description = "Specifies the name of the engine that this option group should be associated with"
   type        = string
-  default     = ""
+  default     = "postgres"
 }
 
 variable "major_engine_version" {
   description = "Specifies the major version of the engine that this option group should be associated with"
   type        = string
-  default     = ""
+  default     = "13"
 }
 
 
@@ -32,7 +32,7 @@ variable "major_engine_version" {
 variable "family" {
   description = "The family of the DB parameter group"
   type        = string
-  default     = ""
+  default     = "postgres13"
 }
 
 
@@ -51,39 +51,33 @@ variable "subnet_ids" {
 #------------- RDS Instance -------------#
 
 variable "postgres_db" {
+  description = "Postgres DB name from Parameter Store"
   type        = string
-  description = "Postgres DB name"
-  default     = ""
+  default     = null
 }
 
 variable "database_username" {
+  description = "DB master user name from Parameter Store"
   type        = string
-  description = "Django secret key"
-  default     = ""
+  default     = null
 }
 
 variable "database_password" {
+  description = "DB master password name from Parameter Store"
   type        = string
-  description = "Database URL"
-  default     = ""
-}
-
-variable "db_name" {
-  description = "The name of the database to create when the DB instance is created"
-  type        = string
-  default     = ""
+  default     = null
 }
 
 variable "engine" {
   description = "The database engine to use"
   type        = string
-  default     = ""
+  default     = "postgres"
 }
 
 variable "engine_version" {
   description = "The engine version to use"
   type        = string
-  default     = ""
+  default     = "13.7"
 }
 
 variable "multi_az" {
@@ -92,48 +86,34 @@ variable "multi_az" {
   default     = false
 }
 
-variable "username" {
-  description = "Username for the master DB user"
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
-variable "password" {
-  description = "Password for the master DB user"
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
 variable "instance_class" {
   description = "The RDS instance class"
   type        = string
-  default     = ""
+  default     = "db.t3.micro"
 }
 
 variable "storage_type" {
   description = "The RDS instance storage type"
   type        = string
-  default     = ""
+  default     = "gp2"
 }
 
 variable "allocated_storage" {
   description = "The amount of allocated storage"
   type        = number
-  default     = null
+  default     = 20
 }
 
 variable "max_allocated_storage" {
   description = "When configured, the upper limit to which Amazon RDS can automatically scale the storage of the DB instance"
   type        = number
-  default     = null
+  default     = 100
 }
 
 variable "network_type" {
   description = "The network type of the DB instance"
   type        = string
-  default     = ""
+  default     = "IPV4"
 }
 
 variable "publicly_accessible" {
@@ -151,19 +131,19 @@ variable "vpc_security_group_ids" {
 variable "availability_zone" {
   description = "The availability zone of the instance"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "ca_cert_identifier" {
   description = "Identifier of the CA certificate for the DB instance"
   type        = string
-  default     = ""
+  default     = "rds-ca-2019"
 }
 
 variable "port" {
   description = "Database port"
   type        = number
-  default     = null
+  default     = 5432
 }
 
 variable "performance_insights_enabled" {
@@ -175,7 +155,7 @@ variable "performance_insights_enabled" {
 variable "backup_retention_period" {
   description = "The days to retain backups for. Must be between 0 and 35"
   type        = number
-  default     = null
+  default     = 7
 }
 
 variable "delete_automated_backups" {
@@ -211,7 +191,7 @@ variable "auto_minor_version_upgrade" {
 variable "apply_immediately" {
   description = "Specifies whether any database modifications are applied immediately, or during the next maintenance window"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "deletion_protection" {
@@ -227,7 +207,7 @@ variable "skip_final_snapshot" {
 }
 
 variable "final_snapshot_identifier" {
-  description = "The name of your final DB snapshot when this DB instance is deleted"
+  description = "The name of your final DB snapshot when this DB instance is deleted. Must be provided if `skip_final_snapshot` is set to `false`"
   type        = string
   default     = null
 }
@@ -235,12 +215,12 @@ variable "final_snapshot_identifier" {
 variable "backup_window" {
   description = "The daily time range (in UTC) during which automated backups are created if they are enabled. Example: `09:46-10:16`. Must not overlap with `maintenance_window`"
   type        = string
-  default     = ""
+  default     = "02:00-03:00"
 }
 
 variable "maintenance_window" {
   description = "The window to perform maintenance in. Syntax: `ddd:hh24:mi-ddd:hh24:mi`. Eg: `Mon:00:00-Mon:03:00`"
   type        = string
-  default     = ""
+  default     = "Sun:00:00-Sun:02:00"
 }
 
