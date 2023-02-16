@@ -1,29 +1,11 @@
-#---------- ALB Security Group ----------#
-resource "aws_security_group" "alb_security_group" {
-  count       = length(var.ports_for_alb_sg) != 0 ? 1 : 0
-  name        = "${var.project}-${var.environment}-alb-security-group"
-  description = "${var.project}-${var.environment}-alb-security-group"
+#---------- Security Group ----------#
+resource "aws_security_group" "security_group" {
+  name        = "${var.project}-${var.environment}-${var.security_group_name}"
+  description = "${var.project}-${var.environment}-${var.security_group_description}"
   vpc_id      = var.vpc_id
 
-  dynamic "ingress" {
-    for_each = var.ports_for_alb_sg
-    content {
-      from_port   = ingress.value
-      to_port     = ingress.value
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
-    Name = "${var.project}-${var.environment}-alb-security-group"
+    Name = "${var.project}-${var.environment}-${var.security_group_name}"
   }
 
 }
@@ -31,65 +13,61 @@ resource "aws_security_group" "alb_security_group" {
 
 
 
-#---------- App Security Group ----------#
-resource "aws_security_group" "application_security_group" {
-  count       = length(var.ports_for_application_sg) != 0 ? 1 : 0
-  name        = "${var.project}-${var.environment}-app-security-group"
-  description = "${var.project}-${var.environment}-app-security-group"
-  vpc_id      = var.vpc_id
-
-  dynamic "ingress" {
-    for_each = var.ports_for_application_sg
-    content {
-      from_port       = ingress.value
-      to_port         = ingress.value
-      protocol        = "tcp"
-      security_groups = var.alb_security_group_id
-    }
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "${var.project}-${var.environment}-app-security-group"
-  }
-
+#---------- Ingress rule with CIDR Blocks ----------#
+resource "aws_security_group_rule" "ingress_rule_with_cidr" {
+  count             = length(var.ingress_with_cidr_rule_from_ports)
+  type              = "ingress"
+  from_port         = element(var.ingress_with_cidr_rule_from_ports, count.index)
+  to_port           = element(var.ingress_with_cidr_rule_to_ports, count.index)
+  protocol          = element(var.ingress_with_cidr_rule_protocols, count.index)
+  cidr_blocks       = [element(var.ingress_with_cidr_rule_cidr_blocks, count.index)]
+  description       = element(var.ingress_with_cidr_rule_description, count.index)
+  security_group_id = aws_security_group.security_group.id
 }
 
 
 
 
-#---------- DB Security Group ----------#
-resource "aws_security_group" "database_security_group" {
-  count       = length(var.ports_for_database_sg) != 0 ? 1 : 0
-  name        = "${var.project}-${var.environment}-db-security-group"
-  description = "${var.project}-${var.environment}-db-security-group"
-  vpc_id      = var.vpc_id
+#---------- Ingress rule with source security group ----------#
+resource "aws_security_group_rule" "ingress_rule_with_source_sg" {
+  count                    = length(var.ingress_with_source_sg_rule_from_ports)
+  type                     = "ingress"
+  from_port                = element(var.ingress_with_source_sg_rule_from_ports, count.index)
+  to_port                  = element(var.ingress_with_source_sg_rule_to_ports, count.index)
+  protocol                 = element(var.ingress_with_source_sg_rule_protocols, count.index)
+  source_security_group_id = element(var.ingress_with_source_sg_rule_security_groups, count.index)
+  description              = element(var.ingress_with_source_sg_rule_description, count.index)
+  security_group_id        = aws_security_group.security_group.id
+}
 
-  dynamic "ingress" {
-    for_each = var.ports_for_database_sg
-    content {
-      from_port       = ingress.value
-      to_port         = ingress.value
-      protocol        = "tcp"
-      security_groups = var.app_security_group_id
-    }
-  }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
-  tags = {
-    Name = "${var.project}-${var.environment}-db-security-group"
-  }
 
+
+#---------- Egress rule with CIDR Blocks ----------#
+resource "aws_security_group_rule" "egress_rule_with_cidr" {
+  count             = length(var.egress_with_cidr_rule_from_ports)
+  type              = "egress"
+  from_port         = element(var.egress_with_cidr_rule_from_ports, count.index)
+  to_port           = element(var.egress_with_cidr_rule_to_ports, count.index)
+  protocol          = element(var.egress_with_cidr_rule_protocols, count.index)
+  cidr_blocks       = [element(var.egress_with_cidr_rule_cidr_blocks, count.index)]
+  description       = element(var.egress_with_cidr_rule_description, count.index)
+  security_group_id = aws_security_group.security_group.id
+}
+
+
+
+
+
+#---------- Egress rule with source security group ----------#
+resource "aws_security_group_rule" "egress_rule_with_source_sg" {
+  count                    = length(var.egress_with_source_sg_rule_from_ports)
+  type                     = "egress"
+  from_port                = element(var.egress_with_source_sg_rule_from_ports, count.index)
+  to_port                  = element(var.egress_with_source_sg_rule_to_ports, count.index)
+  protocol                 = element(var.egress_with_source_sg_rule_protocols, count.index)
+  source_security_group_id = element(var.egress_with_source_sg_rule_security_groups, count.index)
+  description              = element(var.egress_with_source_sg_rule_description, count.index)
+  security_group_id        = aws_security_group.security_group.id
 }

@@ -1,9 +1,3 @@
-variable "vpc_id" {
-  description = "VPC ID to use"
-  type        = string
-  default     = null
-}
-
 variable "project" {
   description = "Project name"
   type        = string
@@ -19,25 +13,58 @@ variable "environment" {
 
 
 
-#---------- ALB Security Group ----------#
-variable "ports_for_alb_sg" {
-  description = "List of ingress ports for Application Load Balancer security group"
-  type        = list(string)
-  default     = ["80", "443"]
+#---------- Security Group ----------#
+
+variable "vpc_id" {
+  description = "VPC ID to use"
+  type        = string
+  default     = null
+}
+
+variable "security_group_name" {
+  description = "Security group name"
+  type        = string
+  default     = null
+}
+
+variable "security_group_description" {
+  description = "Security group description"
+  type        = string
+  default     = null
 }
 
 
 
 
-#---------- App Security Group ----------#
-variable "ports_for_application_sg" {
-  description = "List of ingress ports for application security group"
+
+#---------- Ingress rule with CIDR Blocks ----------#
+
+variable "ingress_with_cidr_rule_from_ports" {
+  description = "List of `from_port` for ingress rule"
   type        = list(string)
-  default     = ["8000"]
+  default     = []
 }
 
-variable "alb_security_group_id" {
-  description = "ALB security group ID"
+variable "ingress_with_cidr_rule_to_ports" {
+  description = "List of `to_port` for ingress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "ingress_with_cidr_rule_protocols" {
+  description = "List of `protocol` for ingress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "ingress_with_cidr_rule_cidr_blocks" {
+  description = "List of `cidr_blcoks` for ingress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "ingress_with_cidr_rule_description" {
+  description = "List of `description` for ingress rule"
   type        = list(string)
   default     = []
 }
@@ -45,15 +72,107 @@ variable "alb_security_group_id" {
 
 
 
-#---------- DB Security Group ----------#
-variable "ports_for_database_sg" {
-  description = "List of ingress ports for database security group"
+
+#---------- Ingress rule with source security group ----------#
+
+variable "ingress_with_source_sg_rule_from_ports" {
+  description = "List of `from_port` for ingress rule"
   type        = list(string)
-  default     = ["5432"]
+  default     = []
 }
 
-variable "app_security_group_id" {
-  description = "Application security group ID"
+variable "ingress_with_source_sg_rule_to_ports" {
+  description = "List of `to_port` for ingress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "ingress_with_source_sg_rule_protocols" {
+  description = "List of `protocol` for ingress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "ingress_with_source_sg_rule_security_groups" {
+  description = "List of `source_security_group_id` for ingress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "ingress_with_source_sg_rule_description" {
+  description = "List of `description` for ingress rule"
+  type        = list(string)
+  default     = []
+}
+
+
+
+
+
+#---------- Egress rule with CIDR Blocks ----------#
+
+variable "egress_with_cidr_rule_from_ports" {
+  description = "List of `from_port` for egress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "egress_with_cidr_rule_to_ports" {
+  description = "List of `to_port` for egress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "egress_with_cidr_rule_protocols" {
+  description = "List of `protocol` for egress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "egress_with_cidr_rule_cidr_blocks" {
+  description = "List of `cidr_blcoks` for egress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "egress_with_cidr_rule_description" {
+  description = "List of `description` for egress rule"
+  type        = list(string)
+  default     = []
+}
+
+
+
+
+
+#---------- Egress rule with source security group ----------#
+
+variable "egress_with_source_sg_rule_from_ports" {
+  description = "List of `from_port` for egress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "egress_with_source_sg_rule_to_ports" {
+  description = "List of `to_port` for egress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "egress_with_source_sg_rule_protocols" {
+  description = "List of `protocol` for egress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "egress_with_source_sg_rule_security_groups" {
+  description = "List of `source_security_group_id` for egress rule"
+  type        = list(string)
+  default     = []
+}
+
+variable "egress_with_source_sg_rule_description" {
+  description = "List of `description` for egress rule"
   type        = list(string)
   default     = []
 }
