@@ -31,7 +31,7 @@ inputs = {
   internal = false
   load_balancer_type = "application"
   subnets = dependency.vpc.outputs.public_subnets_ids
-  security_groups = dependency.alb_security_group.outputs.alb_security_group_id
+  security_groups = [dependency.alb_security_group.outputs.security_group_id]
 
 
   # Application Load Balancer Target Group

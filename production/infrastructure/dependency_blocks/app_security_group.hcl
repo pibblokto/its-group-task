@@ -7,6 +7,6 @@ dependency "app_security_group" {
 
   mock_outputs = {
 
-    application_security_group_id = ["sg-00000001"]
+    security_group_id = "sg-00000001"
   }
 }

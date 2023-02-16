@@ -30,11 +30,26 @@ include "app_security_group" {
 
 inputs = {
 
+  # Security Group
   vpc_id = dependency.vpc.outputs.main_vpc_id
+  security_group_name = "db-sg"
+  security_group_description = "db-sg"
 
-  ports_for_database_sg = ["5432"]
 
-  app_security_group_id = dependency.app_security_group.outputs.application_security_group_id
+  # Ingress rule with source security group
+  ingress_with_source_sg_rule_from_ports = ["5432"]
+  ingress_with_source_sg_rule_to_ports = ["5432"]
+  ingress_with_source_sg_rule_protocols = ["tcp"]
+  ingress_with_source_sg_rule_security_groups = [dependency.app_security_group.outputs.security_group_id]
+  ingress_with_source_sg_rule_description = ["Allow all inbound traffic from App SG"]
+
+
+  # Egress rule with CIDR Blocks
+  egress_with_cidr_rule_from_ports = ["0"]
+  egress_with_cidr_rule_to_ports = ["0"]
+  egress_with_cidr_rule_protocols = ["-1"]
+  egress_with_cidr_rule_cidr_blocks = ["0.0.0.0/0"]
+  egress_with_cidr_rule_description = ["Allow all outbound traffic"]
 
 }
 

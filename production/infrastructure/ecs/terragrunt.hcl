@@ -55,7 +55,7 @@ inputs = {
   scheduling_strategy = "REPLICA"
   desired_count = 2
   subnets = dependency.vpc.outputs.private_subnets_ids
-  ecs_security_groups = dependency.app_security_group.outputs.application_security_group_id
+  ecs_security_groups = [dependency.app_security_group.outputs.security_group_id]
   alb_target_group_arn = dependency.alb.outputs.alb_target_group_arn
 
   # ECS Service Autoscaling

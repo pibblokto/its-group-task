@@ -27,12 +27,27 @@ include "alb_security_group" {
 
 inputs = {
   
+  # Security Group
   vpc_id = dependency.vpc.outputs.main_vpc_id
+  security_group_name = "app-sg"
+  security_group_description = "app-sg"
 
-  ports_for_application_sg = ["8000"]
 
-  alb_security_group_id = dependency.alb_security_group.outputs.alb_security_group_id
+  # Ingress rule with source security group
+  ingress_with_source_sg_rule_from_ports = ["8000"]
+  ingress_with_source_sg_rule_to_ports = ["8000"]
+  ingress_with_source_sg_rule_protocols = ["tcp"]
+  ingress_with_source_sg_rule_security_groups = [dependency.alb_security_group.outputs.security_group_id]
+  ingress_with_source_sg_rule_description = ["Allow all inbound traffic from ALB SG"]
 
+
+  # Egress rule with CIDR Blocks
+  egress_with_cidr_rule_from_ports = ["0"]
+  egress_with_cidr_rule_to_ports = ["0"]
+  egress_with_cidr_rule_protocols = ["-1"]
+  egress_with_cidr_rule_cidr_blocks = ["0.0.0.0/0"]
+  egress_with_cidr_rule_description = ["Allow all outbound traffic"]
+  
 }
 
 dependencies {
