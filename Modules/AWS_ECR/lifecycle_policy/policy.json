@@ -1,7 +1,7 @@
 {
     "rules": [
         {
-            "rulePriority": 10,
+            "rulePriority": 1,
             "description": "For `latest` tag, keep last 5 images",
             "selection": {
               "tagStatus": "any",
