@@ -1,19 +1,31 @@
-output "id" {
-    value = aws_cloudfront_distribution.cloudfront_distribution.id
+#------------- CloudFront Cache Policy -------------#
+output "cache_policy_id" {
+  value = aws_cloudfront_cache_policy.example.id
 }
 
-output "arn" {
-    value = aws_cloudfront_distribution.cloudfront_distribution.arn
+
+
+
+
+
+#------------- CloudFront Distribution -------------#
+
+output "distribution_id" {
+  value = aws_cloudfront_distribution.cloudfront_distribution.id
 }
 
-output "caller_reference " {
-    value = aws_cloudfront_distribution.cloudfront_distribution.caller_reference 
+output "distribution_arn" {
+  value = aws_cloudfront_distribution.cloudfront_distribution.arn
 }
 
-output "status" {
-    value = aws_cloudfront_distribution.cloudfront_distribution.status
+output "distribution_caller_reference" {
+  value = aws_cloudfront_distribution.cloudfront_distribution.caller_reference
 }
 
-output "domain_name" {
-    value = aws_cloudfront_distribution.cloudfront_distribution.domain_name
+output "distribution_status" {
+  value = aws_cloudfront_distribution.cloudfront_distribution.status
+}
+
+output "distribution_domain_name" {
+  value = aws_cloudfront_distribution.cloudfront_distribution.domain_name
 }

@@ -10,10 +10,120 @@ variable "environment" {
   default     = ""
 }
 
+
+
+
+#------------- CloudFront Cache Policy -------------#
+
+variable "policy_comment" {
+  description = "Any comment about cache policy"
+  type        = string
+  default     = "Module-generated policy"
+}
+
+variable "policy_min_ttl" {
+  description = "The minimum amount of time, in seconds, that you want objects to stay in the CloudFront cache before CloudFront sends another request to the origin to see if the object has been updated"
+  type        = number
+  default     = 0
+}
+
+variable "policy_default_ttl" {
+  description = "The default amount of time, in seconds, that you want objects to stay in the CloudFront cache before CloudFront sends another request to the origin to see if the object has been updated"
+  type        = number
+  default     = 50
+}
+
+variable "policy_max_ttl" {
+  description = "The maximum amount of time, in seconds, that objects stay in the CloudFront cache before CloudFront sends another request to the origin to see if the object has been updated"
+  type        = number
+  default     = 100
+}
+
+variable "header_items" {
+  description = "Choose headers to cache. MAXIMUM IS 10"
+  type        = list(string)
+  default = [
+    "CloudFront-Viewer-City",
+    "CloudFront-Viewer-Country-Region-Name",
+    "CloudFront-Viewer-Country-Region",
+    "CloudFront-Viewer-Country-Name",
+    "CloudFront-Viewer-Country",
+    "CloudFront-Viewer-Http-Version",
+    "CloudFront-Forwarded-Proto",
+    "CloudFront-Is-Android-Viewer",
+    "CloudFront-Is-IOS-Viewer",
+    "CloudFront-Is-Desktop-Viewer",
+    "CloudFront-Is-SmartTV-Viewer",
+    "CloudFront-Is-Tablet-Viewer",
+    "CloudFront-Is-Mobile-Viewer",
+    "Origin",
+    "Host",
+    "Accept",
+    "Authorization",
+    "Accept-Encoding",
+    "Accept-Language",
+    "Accept-Charset",
+    "Referer",
+    "CloudFront-Viewer-Postal-Code",
+    "CloudFront-Viewer-Time-Zone",
+    "CloudFront-Viewer-Latitude",
+    "CloudFront-Viewer-Longitude",
+    "CloudFront-Viewer-Metro-Code",
+    "Access-Control-Request-Method",
+    "Access-Control-Request-Headers",
+    "Accept-Datetime"
+  ]
+}
+
+variable "enable_accept_encoding_brotli" {
+  description = "A flag that can affect whether the Accept-Encoding HTTP header is included in the cache key and included in requests that CloudFront sends to the origin"
+  type        = bool
+  default     = true
+}
+
+variable "enable_accept_encoding_gzip" {
+  description = "A flag that can affect whether the Accept-Encoding HTTP header is included in the cache key and included in requests that CloudFront sends to the origin"
+  type        = bool
+  default     = true
+}
+
+
+
+
+#------------- CloudFront Distribution -------------#
+
 variable "domain_name" {
   description = "Domain name for origin"
   type        = string
-  default     = ""
+  default     = null
+}
+
+variable "http_port" {
+  description = "Origin HTTP port"
+  type        = number
+  default     = 80
+}
+
+variable "https_port" {
+  description = "Origin HTTPS port"
+  type        = number
+  default     = 443
+}
+
+variable "origin_protocol_policy" {
+  description = "Specifies the minimum SSL/TLS protocol that CloudFront uses when connecting to your origin over HTTPS"
+  type        = string
+  default     = "http-only"
+  validation {
+    condition     = contains(["http-only", "match-viewer", "https-only"], var.origin_protocol_policy)
+    error_message = "Valid values for var: tag_mutability are (http-only, match-viewer, https-only)."
+  }
+}
+
+variable "origin_ssl_protocols" {
+  description = "Minimum origin SSL protocol"
+  type        = list(string)
+  default     = ["TLSv1.2"]
 }
 
 variable "enabled" {
@@ -34,64 +144,58 @@ variable "comment" {
   default     = "Module-generated distribution"
 }
 
-
-variable "aliases" {
-  description = "Extra CNAMEs (alternate domain names), if any, for this distribution"
-  type        = list(string)
-  default     = [""]
-}
-
-variable "default_allowed_methods" {
-  description = "List of allowed HTTP methods"
-  type        = list(string)
-  default     = [""]
-}
-
-variable "default_cashed_methods" {
-  description = "Controls whether CloudFront caches the response to requests using the specified HTTP methods"
-  type        = list(string)
-  default     = [""]
-}
-
-variable "origin_id" {
-  description = "Unique identifier for the origin"
-  type        = string
-  default     = ""
-}
-
-variable "default_cookies_forward" {
-  description = "Whether you want CloudFront to forward cookies to the origin that is associated with this cache behavior"
-  type        = string
-  default     = "none"
+variable "compress" {
+  description = "Whether you want CloudFront to automatically compress content for web requests"
+  type        = bool
+  default     = true
 }
 
 variable "default_viewer_protocol_policy" {
   description = "Use this element to specify the protocol that users can use to access the files in the origin specified by TargetOriginId when a request matches the path pattern in PathPattern"
   type        = string
-  default     = "allow-all"
+  default     = "redirect-to-https"
 }
 
-variable "default_min_ttl" {
-  description = "The minimum amount of time that you want objects to stay in CloudFront caches before CloudFront queries your origin to see whether the object has been updated. Defaults to 0"
+variable "default_allowed_methods" {
+  description = "List of allowed HTTP methods"
+  type        = list(string)
+  default     = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+}
+
+variable "default_cached_methods" {
+  description = "Controls whether CloudFront caches the response to requests using the specified HTTP methods"
+  type        = list(string)
+  default     = ["GET", "HEAD"]
+}
+
+variable "distribution_min_ttl" {
+  description = "The minimum amount of time that you want objects to stay in CloudFront caches before CloudFront queries your origin to see whether the object has been updated"
   type        = number
   default     = 0
 }
 
-
-variable "default_default_ttl" {
-  description = "The default amount of time (in seconds) that an object is in a CloudFront cache before CloudFront forwards another request in the absence of an Cache-Control max-age or Expires header."
+variable "distribution_default_ttl" {
+  description = "The default amount of time (in seconds) that an object is in a CloudFront cache before CloudFront forwards another request in the absence of an `Cache-Control max-age` or `Expires` header"
   type        = number
+  default     = 3600
 }
 
-variable "default_max_ttl" {
-  description = "The minimum amount of time that you want objects to stay in CloudFront caches before CloudFront queries your origin to see whether the object has been updated. Defaults to 0"
+variable "distribution_max_ttl" {
+  description = "The maximum amount of time (in seconds) that an object is in a CloudFront cache before CloudFront forwards another request to your origin to determine whether the object has been updated. Only effective in the presence of `Cache-Control max-age`, `Cache-Control s-maxage`, and `Expires` headers"
   type        = number
+  default     = 86400
+}
+
+variable "aliases" {
+  description = "Comma separated list. Extra CNAMEs (alternate domain names), if any, for this distribution"
+  type        = list(string)
+  default     = []
 }
 
 variable "price_class" {
   description = "the price class for this distribution"
   type        = string
-  default     = "PriceClass_200"
+  default     = "PriceClass_100"
   validation {
     condition     = contains(["PriceClass_All", "PriceClass_200", "PriceClass_100"], var.price_class)
     error_message = "Valid values for var: tag_mutability are (PriceClass_All, PriceClass_200, PriceClass_100)."
@@ -101,7 +205,7 @@ variable "price_class" {
 variable "restriction_type" {
   description = "The method that you want to use to restrict distribution of your content by country: none, whitelist, or blacklist"
   type        = string
-  default     = "whitelist"
+  default     = "none"
   validation {
     condition     = contains(["whitelist", "blacklist", "none"], var.restriction_type)
     error_message = "Valid values for var: tag_mutability are (none, whitelist, blacklist)."
@@ -114,36 +218,34 @@ variable "locations" {
   default     = []
 }
 
-variable "acm_certificate_arn" {
-  description = "arn of certificate from aws certificate manager"
-  type        = string
-  default     = ""
-}
-
 variable "cloudfront_default_certificate" {
-  description = ""
+  description = "Set to `true`, if you want viewers to use HTTPS to request your objects and you're using the CloudFront domain name for your distribution"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "default_query_strings" {
-  type    = bool
-  default = false
+variable "certificate_arn" {
+  description = "SSL certificate ARN"
+  type        = string
+  sensitive   = true
+  default     = null
 }
 
-variable "origin_protocol_policy" {
-    description = "Specifies the minimum SSL/TLS protocol that CloudFront uses when connecting to your origin over HTTPS"
-    type = string
-    default = "http-only"
-    validation {
-    condition     = contains(["http-only", "match-viewer", "https-only"], var.origin_protocol_policy)
-    error_message = "Valid values for var: tag_mutability are (http-only, match-viewer, https-only)."
-  }
+variable "minimum_protocol_version" {
+  description = "The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections"
+  type        = string
+  default     = "TLSv1.2_2021"
 }
 
-variable "origin_ssl_protocols" {
-    description = ""
-    type = string
-    default = ["TLSv1.2"]
+variable "ssl_support_method" {
+  description = "Specifies how you want CloudFront to serve HTTPS requests"
+  type        = string
+  default     = "sni-only"
 }
-    
+
+variable "http_version" {
+  description = "The maximum HTTP version to support on the distribution"
+  type        = string
+  default     = "http2"
+}
+

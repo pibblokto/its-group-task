@@ -54,7 +54,6 @@ inputs = {
   # Application Load Balancer HTTPS Listener
   https_port = "443"
   ssl_policy = "ELBSecurityPolicy-2016-08"
-  certificate_arn = "arn:aws:acm:us-east-1:999360891534:certificate/67f8950d-b391-4003-9e1d-3ff2c2459a09"
 
 
   # Application Load Balancer Redirection Listener
