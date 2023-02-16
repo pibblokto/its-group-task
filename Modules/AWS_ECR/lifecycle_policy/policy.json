@@ -1,17 +1,14 @@
 {
     "rules": [
         {
-            "rulePriority": 1,
-            "description": "Expire images older than 14 days",
+            "rulePriority": 10,
+            "description": "For `latest` tag, keep last 5 images",
             "selection": {
-                "tagStatus": "untagged",
-                "countType": "sinceImagePushed",
-                "countUnit": "days",
-                "countNumber": 14
+              "tagStatus": "any",
+              "countType": "imageCountMoreThan",
+              "countNumber": 15
             },
-            "action": {
-                "type": "expire"
-            }
-        }
+            "action": { "type": "expire" }
+          }
     ]
 }
