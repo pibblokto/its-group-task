@@ -117,3 +117,48 @@ secrets = [
 * Cloudflare is a global network designed to make everything you connect to the Internet secure, private, fast, and reliable.
 
 * In our case, CloudFlare allows adding a beautiful domain name for CloudFront Distribution and makes the Django application more secure and protected.
+
+# 🏡 Provision infrastructure 🏡
+* First of all, you should configure all *child* `terragrunt.hcl` files responsible for infrastructure provisioning. Then, create the ECR repository separately. For this : 
+```
+cd production/infrastructure/ecr/
+```
+```
+terragrunt plan
+```
+```
+terragrunt apply
+```
+   *It will only create two resources (the ECR repository and its policy). After this, you must push the Docker image into the ECR repository.*
+
+* Now, provision the rest infrastructure :
+```
+cd production/infrastructure/
+```
+```
+terragrunt run-all plan
+```
+```
+terragrunt run-all apply
+```
+  *We can't but mention that infrastructure creation takes at least 25 minutes.*
+
+# 🔨 How to create a new environment? 🔨
+* We guess you'll need, for example, `staging`, `qa` or another environment for testing. The solution is straightforward :
+  * create a new folder (let it be `qa/`) on the same level as the existing `production/` folder;
+  * copy `production/infrastructure/` folder inside `qa/`;
+  * replace `environment` value with new in `qa/infrastructure/common_vars.hcl`;
+  * perform all actions from `Parameter Store` block, but for `ENVIRONMENT` enter `qa`;
+  * perform all `Parameter Store`-related actions from `RDS` block, but for `ENVIRONMENT` enter `qa`;
+  * perform all actions from `Provision infrastructure` block, but now use `qa/` folder instead of `production/`.
+  
+# 🧹 Cleanup 🧹
+* Perform the following actions :
+  * delete `all` Docker images from the ECR repository;
+```
+cd DESIRED_ENVIRONMENT/infrastructure/
+```
+```
+terragrunt run-all destroy
+```
+  Finally, this is the end. Cool, isn't it? Happy Terragrunting!
