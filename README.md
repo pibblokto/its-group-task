@@ -59,6 +59,7 @@
 
 # ⚖️ Application Load Balancer ⚖️
 * Elastic Load Balancing automatically distributes incoming traffic across multiple `Fargate Containers`. It monitors the health of its registered targets and routes traffic only to the healthy targets. Elastic Load Balancing scales your load balancer as your incoming traffic changes. It can automatically scale to the vast majority of workloads.
+
 * We can't but mention that `Target Group` should be the `IP` target type as the ECS Fargate is being used. Also, you don't need to redirect traffic from the Application Load Balancer HTTP listener (80 port) to the HTTPS listener (443 port) because `CloudFront Distribution` is responsible for this action. As a result, both listeners send incoming traffic directly to the `Target Group`.
 
 # 💾 RDS 💾
@@ -66,7 +67,7 @@
 
 * As you might have guessed, we need to pass some secrets into our configuration (`the name of the database` to create when the DB instance is created, this database is used for migration in Django; `master username` and `password`). Of course, Parameter Store will help us to solve this problem.
 
-* In `Parameter Store` block on the image, you can see the following parameters :
+* In the `Parameter Store` block on the image, you can see the following parameters :
   * `team-task-production_postgres_db` contains the database name for migration in Django;
   * `team-task-production_database_username` contains the `master username` name;
   * `team-task-production_database_password` contains the `master user` password.
@@ -81,4 +82,28 @@
 postgres_db                     = "postgres_db"
 database_username               = "database_username"
 database_password               = "database_password"
+```
+
+# 🐳 ECS Fargate 🐳
+* Amazon Elastic Container Service is a fully managed container orchestration service that helps you easily deploy, manage, and scale containerized applications. AWS Fargate is a technology that you can use with Amazon ECS to run containers without having to manage servers or clusters of Amazon EC2 instances. With Fargate, you no longer have to provision, configure, or scale clusters of virtual machines to run containers. This removes the need to choose server types, decide when to scale your clusters, or optimize cluster packing.
+
+* `ECS Cluster` includes `Service with Application Load Balancer` and `auto scaling policy` which will scale in / out containers depends on their average CPU utilization.
+
+* By the way, we also need to pass some secrets into containers. Surprisingly, Parameter Store will help us with this!
+
+* If you need to pass non-secret values, you should use the container definitions `environment` block (line 90 in `Modules/ECS_Fargate/main.tf`). `name` - container env variable, `value` - its value : 
+```
+environment = [
+  { "name" : "DEBUG", "value" : "False" },
+  { "name" : "DJANGO_ALLOWED_HOSTS", "value" : "*" },
+  { "name" : "DEVELOPMENT_MODE", "value" : "False" }
+]
+```
+
+* For secrets, you should use the container definitions `secrets` block (line 95 in `Modules/ECS_Fargate/main.tf`). `name` - container env variable, `valueFrom` - its value, taken from `Parameter Store parameter`. In the `Parameter Store` block on the image, you can see two secrets inserted into containers : `team-task-production_database_url` & `team-task-production_django_secret_key`. As you understand, we need to specify only `PARAMETER_NAME` because `PROJECT_NAME` & `ENVIRONMENT` are automatically inputted from `production/infrastructure/common_vars.hcl` `project` & `environment` variables in accordance :
+```
+secrets = [
+  { "name" : "DATABASE_URL", "valueFrom" : "${var.project}-${var.environment}_database_url" },
+  { "name" : "DJANGO_SECRET_KEY", "valueFrom" : "${var.project}-${var.environment}_django_secret_key" }
+]
 ```
