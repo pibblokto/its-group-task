@@ -24,11 +24,14 @@
     * `accound_id` - AWS Account used for infrastructure provisioning;
     * `certificate_arn` - ACM SSL Certificate ARN used for Application Load Balancer and CloudFront Distribution HTTPS requests.
 
-# 🖧 VPC 🖧
+# 🕸️ VPC 🕸️
 * VPC consists of public and private subnets, NAT gateway and IGW. Both public and private subnets are equally distributed among all AZs. You have to specify at least two public subnets (otherwise ALB won't be created). In case you are plannig to use "terragrunt plan" make sure you specified mock outputs in production/infrastructure/dependency_blocks/vpc.hcl. 
 
 # 🛄 S3 Bucket 🛄 
 * Amazon S3 stores `static files` for the Django application. Also, CloudFront Distribution caches the S3 bucket's content to provide the `lowest latency` (time delay) so that content is delivered with `the best possible performance`.
+
+# 💿 ECR 💿
+* ECR module supports lifecycle policies which are stored in Modules/AWS_ECR/lifecycle_policy/. In order to specify what lifecycle policy to use, provide var.policy_json variable which represents the path to the json file. Default policy has "countType" set to "imageCountMoreThan" and "countNumber" set to 15.
 
 # ㊙️ Parameter Store ㊙️
 * Systems Manager Parameter Store keeps all secrets you want to `securely` use across your environment(s). As shown in the project scheme, this service `isn't managed` by Terragrunt. It's necessary not to transmit secrets in plain text inside .tf files. This means that you need to create parameters manually. Let's do it together!
