@@ -87,7 +87,7 @@ database_password               = "database_password"
 # 🐳 ECS Fargate 🐳
 * Amazon Elastic Container Service is a fully managed container orchestration service that helps you easily deploy, manage, and scale containerized applications. AWS Fargate is a technology that you can use with Amazon ECS to run containers without having to manage servers or clusters of Amazon EC2 instances. With Fargate, you no longer have to provision, configure, or scale clusters of virtual machines to run containers. This removes the need to choose server types, decide when to scale your clusters, or optimize cluster packing.
 
-* `ECS Cluster` includes `Service with Application Load Balancer` and `auto scaling policy` which will scale in / out containers depends on their average CPU utilization.
+* `ECS Cluster` includes `Service with Application Load Balancer` and `auto scaling policy`, which will scale in/out containers depending on their average CPU utilization.
 
 * By the way, we also need to pass some secrets into containers. Surprisingly, Parameter Store will help us with this!
 
