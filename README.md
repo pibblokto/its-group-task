@@ -36,4 +36,4 @@
   * for `Description` input what you wish. `Tier` - `Standart`, `Type` - `SecureString`, `Value` - fill in yourself 😉
   
 * In our case, we used `project = team-task` & `environment = production` in `production/infrastructure/common_vars.hcl`, so the list with parameters in Parameter Store will look like this :<br>
-![Parameter Store list example](./images/parameter_store_list_example.jpg)
+![](./images/parameter_store_list_exapmle.jpg)
