@@ -116,7 +116,7 @@ variable "origin_protocol_policy" {
   default     = "http-only"
   validation {
     condition     = contains(["http-only", "match-viewer", "https-only"], var.origin_protocol_policy)
-    error_message = "Valid values for var: tag_mutability are (http-only, match-viewer, https-only)."
+    error_message = "Valid values for var: origin_protocol_policy are (http-only, match-viewer, https-only)."
   }
 }
 
@@ -198,7 +198,7 @@ variable "price_class" {
   default     = "PriceClass_100"
   validation {
     condition     = contains(["PriceClass_All", "PriceClass_200", "PriceClass_100"], var.price_class)
-    error_message = "Valid values for var: tag_mutability are (PriceClass_All, PriceClass_200, PriceClass_100)."
+    error_message = "Valid values for var: price_class are (PriceClass_All, PriceClass_200, PriceClass_100)."
   }
 }
 
@@ -208,7 +208,7 @@ variable "restriction_type" {
   default     = "none"
   validation {
     condition     = contains(["whitelist", "blacklist", "none"], var.restriction_type)
-    error_message = "Valid values for var: tag_mutability are (none, whitelist, blacklist)."
+    error_message = "Valid values for var: restriction_type are (none, whitelist, blacklist)."
   }
 }
 
