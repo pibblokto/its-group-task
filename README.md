@@ -24,6 +24,9 @@
     * `accound_id` - AWS Account used for infrastructure provisioning;
     * `certificate_arn` - ACM SSL Certificate ARN used for Application Load Balancer and CloudFront Distribution HTTPS requests.
 
+# 🖧 VPC 🖧
+* VPC consists of public and private subnets, NAT gateway and IGW. Both public and private subnets are equally distributed among all AZs. You have to specify at least two public subnets (otherwise ALB won't be created). In case you are plannig to use "terragrunt plan" make sure you specified mock outputs in production/infrastructure/dependency_blocks/vpc.hcl. 
+
 # 🛄 S3 Bucket 🛄 
 * Amazon S3 stores `static files` for the Django application. Also, CloudFront Distribution caches the S3 bucket's content to provide the `lowest latency` (time delay) so that content is delivered with `the best possible performance`.
 
