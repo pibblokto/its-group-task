@@ -107,3 +107,13 @@ secrets = [
   { "name" : "DJANGO_SECRET_KEY", "valueFrom" : "${var.project}-${var.environment}_django_secret_key" }
 ]
 ```
+
+# 🚀 CloudFront 🚀
+* As mentioned above (`S3` block), CloudFront caches static content. That's why it provides low latency and excellent content delivery for users worldwide.
+
+* Our CloudFront Distribution uses Application Load Balancer as the origin (of course, with an appropriate caching policy). Also, there is an opportunity to allow only or restrict users from chosen geographical locations to access the Django application.
+
+# 🔒 CloudFlare 🔒
+* Cloudflare is a global network designed to make everything you connect to the Internet secure, private, fast, and reliable.
+
+* In our case, CloudFlare allows adding a beautiful domain name for CloudFront Distribution and makes the Django application more secure and protected.
