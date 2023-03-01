@@ -60,7 +60,7 @@
 # ⚖️ Application Load Balancer ⚖️
 * Elastic Load Balancing automatically distributes incoming traffic across multiple `Fargate Containers`. It monitors the health of its registered targets and routes traffic only to the healthy targets. Elastic Load Balancing scales your load balancer as your incoming traffic changes. It can automatically scale to the vast majority of workloads.
 
-* We can't but mention that `Target Group` should be the `IP` target type as the ECS Fargate is being used. Also, you don't need to redirect traffic from the Application Load Balancer HTTP listener (80 port) to the HTTPS listener (443 port) because `CloudFront Distribution` is responsible for this action. As a result, both listeners send incoming traffic directly to the `Target Group`.
+* We can't but mention that `Target Group` should be the `IP` target type as the `ECS Fargate` is being used. Also, you don't need to redirect traffic from the Application Load Balancer HTTP listener (80 port) to the HTTPS listener (443 port) because `CloudFront Distribution` is responsible for this action. As a result, both listeners send incoming traffic directly to the `Target Group`.
 
 # 💾 RDS 💾
 * Django application closely interacts with the Postgres database placed in a separate RDS instance. This instance `isn't publicly accessible` and is located in a `private` VPC subnet. Another thing is that RDS Service allows us to enable automated backups for the database. If needed, you can do it manually in the AWS Management Console (manual snapshot won't disappear in case of database deletion). 
