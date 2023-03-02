@@ -18,5 +18,11 @@ dependency "datasources" {
 
     ]
 
+    postgres_db = "secret0"
+
+    database_username = "secret1"
+
+    database_password = "secret2"
+
   }
 }

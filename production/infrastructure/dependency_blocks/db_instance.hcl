@@ -7,7 +7,7 @@ dependency "db_instance" {
 
   mock_outputs = {
 
-    database_instance_id = "dbid-00000000"
+    db_instance_id = "dbid-00000000"
     
   }
 }
