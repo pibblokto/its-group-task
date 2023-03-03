@@ -1,3 +1,4 @@
+#----------------- Task Execution Role -----------------#
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${var.project}-${var.environment}-ecs-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
@@ -55,20 +56,26 @@ resource "aws_iam_role_policy" "s3_bucket_access_policy" {
           "s3:*",
           "s3-object-lambda:*",
         ]
-        Effect   = "Allow"
-        Resource = "${var.s3_bucket_arn}/*"
-
+        Effect = "Allow"
+        Resource = [
+          "${var.s3_bucket_arn}",
+          "${var.s3_bucket_arn}/*"
+        ]
       },
     ]
   })
 }
 
 
-// -----------------------------------------------------
+
+
+#----------------- ECS Fargate -----------------#
 resource "aws_ecs_cluster" "aws-ecs-cluster" {
   name = "${var.project}-${var.environment}-cluster"
   tags = {
-    Name = "${var.project}-${var.environment}-cluster"
+    Name        = "${var.project}-${var.environment}-cluster"
+    Project     = "${var.project}"
+    Environment = "${var.environment}"
   }
 }
 
@@ -115,7 +122,9 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
   }
 
   tags = {
-    Name = "${var.project}-${var.environment}-task-definition"
+    Name        = "${var.project}-${var.environment}-task-definition"
+    Project     = "${var.project}"
+    Environment = "${var.environment}"
   }
 
   depends_on = [
@@ -145,6 +154,12 @@ resource "aws_ecs_service" "aws-ecs-service" {
     target_group_arn = var.alb_target_group_arn
     container_name   = var.main_container_name
     container_port   = var.main_container_port
+  }
+
+  tags = {
+    Name        = "${var.project}-${var.environment}-service"
+    Project     = "${var.project}"
+    Environment = "${var.environment}"
   }
 
 }

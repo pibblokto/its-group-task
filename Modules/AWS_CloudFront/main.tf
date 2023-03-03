@@ -83,6 +83,8 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
   ]
 
   tags = {
-    Name = "${var.project}-${var.environment}-main-distribution"
+    Name        = "${var.project}-${var.environment}-main-distribution"
+    Project     = "${var.project}"
+    Environment = "${var.environment}"
   }
 }

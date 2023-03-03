@@ -7,7 +7,7 @@ dependency "db_instance" {
 
   mock_outputs = {
 
-    db_instance_id = "dbid-00000000"
+    db_instance_endpoint = "random-db-name.symbols.us-east-1.rds.amazonaws.com"
     
   }
 }
