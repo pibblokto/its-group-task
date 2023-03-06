@@ -1,17 +1,20 @@
 include "root" {
-  path = find_in_parent_folders()
+  path           = find_in_parent_folders()
   expose         = true
   merge_strategy = "deep"
 }
-
 
 terraform {
   source = "github.com/terraform-aws-modules/terraform-aws-rds//.?ref=v5.6.0"
 }
 
-include "envcommon" {
-  path = "${dirname(find_in_parent_folders())}//env_common//project_envs.hcl"
-  expose = true
+locals {
+  # Automatically load environment-level variables
+  environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+
+  # Extract out common variables for reuse
+  project     = local.environment_vars.locals.project
+  environment = local.environment_vars.locals.environment
 }
 
 include "datasources" {
@@ -32,32 +35,25 @@ include "db_security_group" {
   merge_strategy = "deep"
 }
 
-
-
-
-
 inputs = {
 
   # Option Group
   create_db_option_group = false
 
-
   # Parameter Group 
-  create_db_parameter_group = true
-  parameter_group_name = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-parameter-group"
-  parameter_group_description = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-parameter-group"
-  family = "postgres14"
-
+  create_db_parameter_group   = true
+  parameter_group_name        = "${local.project}-${local.environment}-parameter-group"
+  parameter_group_description = "${local.project}-${local.environment}-parameter-group"
+  family                      = "postgres14"
 
   # Subnet Group
-  create_db_subnet_group = true
-  db_subnet_group_name = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-subnet-group"
-  db_subnet_group_description = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-subnet-group"
-  subnet_ids = dependency.vpc.outputs.private_subnets
-
+  create_db_subnet_group      = true
+  db_subnet_group_name        = "${local.project}-${local.environment}-subnet-group"
+  db_subnet_group_description = "${local.project}-${local.environment}-subnet-group"
+  subnet_ids                  = "${dependency.vpc.outputs.private_subnets}"
 
   # DB Instance
-  identifier                          = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-database" 
+  identifier                          = "${local.project}-${local.environment}-database" 
   allocated_storage                   = 20
   storage_type                        = "gp3"
 //   storage_throughput = 125    #To provision additional IOPS and throughput, increase the allocated storage to 400 GiB or greater.
@@ -69,11 +65,11 @@ inputs = {
   final_snapshot_identifier           = null
   copy_tags_to_snapshot               = true
   instance_class                      = "db.t3.micro"
-  db_name                             = dependency.datasources.outputs.postgres_db
-  username                            = dependency.datasources.outputs.database_username
-  password                            = dependency.datasources.outputs.database_password
+  db_name                             = "${dependency.datasources.outputs.postgres_db}"
+  username                            = "${dependency.datasources.outputs.database_username}"
+  password                            = "${dependency.datasources.outputs.database_password}"
   port                                = 5432
-  vpc_security_group_ids              = [dependency.db_security_group.outputs.security_group_id]
+  vpc_security_group_ids              = ["${dependency.db_security_group.outputs.security_group_id}"]
   availability_zone                   = "us-east-1a"
   multi_az                            = false
 //   iops = 3000       # To provision additional IOPS and throughput, increase the allocated storage to 400 GiB or greater.
@@ -93,23 +89,21 @@ inputs = {
   network_type                        = "IPV4"
   create_random_password              = false
 
-
-
   tags = {
-    Project = "${include.envcommon.locals.environment_vars.locals.project}"
-    Environment = "${include.envcommon.locals.environment_vars.locals.environment}"
+    Project     = "${local.project}"
+    Environment = "${local.environment}"
   }
 
   db_parameter_group_tags = {
-    Name = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-parameter-group"
+    Name = "${local.project}-${local.environment}-parameter-group"
   }
 
   db_subnet_group_tags = {
-    Name = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-subnet-group"
+    Name = "${local.project}-${local.environment}-subnet-group"
   }
 
   db_instance_tags = {
-    Name = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-database"
+    Name = "${local.project}-${local.environment}-database"
   }
 
 }
@@ -117,6 +111,7 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//datasources",
     "..//vpc",
     "..//alb_security_group",
     "..//app_security_group",

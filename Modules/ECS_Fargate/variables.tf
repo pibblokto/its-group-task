@@ -22,9 +22,6 @@ variable "account_id" {
   default     = null
 }
 
-
-
-
 #---------- S3 Bucket ----------#
 
 variable "s3_bucket_arn" {
@@ -32,9 +29,6 @@ variable "s3_bucket_arn" {
   type        = string
   default     = null
 }
-
-
-
 
 #---------- Task Definition ----------#
 
@@ -80,9 +74,6 @@ variable "main_container_port" {
   default     = 8000
 }
 
-
-
-
 #---------- ECS Service ----------#
 
 variable "scheduling_strategy" {
@@ -114,9 +105,6 @@ variable "alb_target_group_arn" {
   type        = string
   default     = null
 }
-
-
-
 
 #---------- ECS Service Autoscaling ----------#
 

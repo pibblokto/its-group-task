@@ -1,18 +1,20 @@
 include "root" {
-  path = find_in_parent_folders()
+  path           = find_in_parent_folders()
   expose         = true
   merge_strategy = "deep"
 }
-
 
 terraform {
   source = "github.com/terraform-aws-modules/terraform-aws-security-group//.?ref=v4.17.1"
 }
 
+locals {
+  # Automatically load environment-level variables
+  environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
-include "envcommon" {
-  path = "${dirname(find_in_parent_folders())}//env_common//project_envs.hcl"
-  expose = true
+  # Extract out common variables for reuse
+  project     = local.environment_vars.locals.project
+  environment = local.environment_vars.locals.environment
 }
 
 include "vpc" {
@@ -21,13 +23,13 @@ include "vpc" {
   merge_strategy = "deep"
 }
 
-
 inputs = {
 
-  vpc_id = dependency.vpc.outputs.vpc_id
-  name = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-alb-sg"
+  vpc_id = "${dependency.vpc.outputs.vpc_id}"
+
+  name            = "${local.project}-${local.environment}-alb-sg"
   use_name_prefix = true
-  description = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-alb-sg"
+  description     = "${local.project}-${local.environment}-alb-sg"
 
   ingress_with_cidr_blocks = [
     {
@@ -57,9 +59,9 @@ inputs = {
   ]
   
   tags = {
-    Name = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-alb-sg"
-    Project = "${include.envcommon.locals.environment_vars.locals.project}"
-    Environment = "${include.envcommon.locals.environment_vars.locals.environment}"
+    Name        = "${local.project}-${local.environment}-alb-sg"
+    Project     = "${local.project}"
+    Environment = "${local.environment}"
   }
 
 }
@@ -67,6 +69,7 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//datasources",
     "..//vpc"
   ]
 }

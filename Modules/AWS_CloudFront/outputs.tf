@@ -1,12 +1,8 @@
 #------------- CloudFront Cache Policy -------------#
+
 output "cache_policy_id" {
   value = aws_cloudfront_cache_policy.example.id
 }
-
-
-
-
-
 
 #------------- CloudFront Distribution -------------#
 

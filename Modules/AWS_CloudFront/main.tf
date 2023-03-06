@@ -30,7 +30,7 @@ resource "aws_cloudfront_cache_policy" "example" {
 resource "aws_cloudfront_distribution" "cloudfront_distribution" {
   origin {
     domain_name = var.domain_name
-    origin_id   = "${var.project}-${var.environment}-ecs-origin"
+    origin_id   = "${var.project}-${var.environment}-alb-origin"
 
     custom_origin_config {
       http_port              = var.http_port
@@ -49,7 +49,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
     compress               = var.compress
     allowed_methods        = var.default_allowed_methods
     cached_methods         = var.default_cached_methods
-    target_origin_id       = "${var.project}-${var.environment}-ecs-origin"
+    target_origin_id       = "${var.project}-${var.environment}-alb-origin"
     viewer_protocol_policy = var.default_viewer_protocol_policy
     cache_policy_id        = aws_cloudfront_cache_policy.example.id
 
@@ -83,7 +83,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
   ]
 
   tags = {
-    Name        = "${var.project}-${var.environment}-main-distribution"
+    Name        = "${var.project}-${var.environment}-distribution"
     Project     = "${var.project}"
     Environment = "${var.environment}"
   }

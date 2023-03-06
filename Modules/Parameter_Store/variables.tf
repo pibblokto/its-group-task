@@ -10,6 +10,8 @@ variable "environment" {
   default     = null
 }
 
+#---------- Parameter Store ----------#
+
 variable "tier" {
   description = "Parameter tier to assign to the parameter. If not specified, will use the default parameter tier for the region. Valid tiers are `Standard`, `Advanced`, and `Intelligent-Tiering`. Downgrading an `Advanced` tier parameter to `Standard` will recreate the resource"
   type        = string

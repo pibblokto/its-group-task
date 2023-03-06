@@ -3,7 +3,7 @@ skip = true
 
 dependency "db_instance" {
 
-  config_path = "..//db_instance"
+  config_path  = "..//db_instance"
 
   mock_outputs = {
 

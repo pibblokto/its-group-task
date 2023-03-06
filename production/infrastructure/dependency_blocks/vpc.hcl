@@ -3,7 +3,7 @@ skip = true
 
 dependency "vpc" {
 
-  config_path = "..//vpc"
+  config_path  = "..//vpc"
 
   mock_outputs = {
 

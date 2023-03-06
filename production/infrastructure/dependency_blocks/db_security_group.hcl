@@ -3,7 +3,7 @@ skip = true
 
 dependency "db_security_group" {
 
-  config_path = "..//db_security_group"
+  config_path  = "..//db_security_group"
 
   mock_outputs = {
 

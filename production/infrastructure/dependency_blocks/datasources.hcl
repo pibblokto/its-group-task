@@ -3,7 +3,7 @@ skip = true
 
 dependency "datasources" {
 
-  config_path = "..//datasources"
+  config_path  = "..//datasources"
 
   mock_outputs = {
 
@@ -18,7 +18,7 @@ dependency "datasources" {
 
     ]
 
-    postgres_db = "secret0"
+    postgres_db       = "secret0"
 
     database_username = "secret1"
 

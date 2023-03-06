@@ -1,3 +1,5 @@
+#------------- Data Sources -------------#
+
 data "aws_availability_zones" "available" {}
 
 data "aws_ssm_parameter" "postgres_db" {
@@ -12,8 +14,7 @@ data "aws_ssm_parameter" "database_password" {
   name = "team-task-production_database_password"
 }
 
-
-
+#------------- Outputs -------------#
 
 output "aws_availability_zones_names" {
   value = data.aws_availability_zones.available.names

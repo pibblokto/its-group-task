@@ -1,22 +1,17 @@
 skip = true
 
-
 locals {
+  # Automatically load environment-level variables
+  region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
 
-  environment_vars = read_terragrunt_config(find_in_parent_folders("common_vars.hcl"))
-
-  aws_region = local.environment_vars.locals.aws_region
-
-  profile = local.environment_vars.locals.profile
-
+  # Extract out common variables for reuse
+  aws_region = local.region_vars.locals.aws_region
+  profile    = local.region_vars.locals.profile
 }
-
-
-
 
 remote_state {
 
-  backend = "s3"
+  backend  = "s3"
 
   generate = {
 
@@ -24,7 +19,6 @@ remote_state {
     if_exists = "overwrite_terragrunt"
 
   }
-
 
   config = {
     bucket  = "project-terraform-tfstate"
@@ -35,9 +29,6 @@ remote_state {
   }
 }
 
-
-
-
 generate "provider" {
 
   path      = "provider.tf"
@@ -45,12 +36,8 @@ generate "provider" {
   
   contents  = <<EOF
 provider "aws" {
-  region = "${local.aws_region}"
+  region  = "${local.aws_region}"
   profile = "${local.profile}"
 }
 EOF
 }
-
-inputs = merge(
-  local.environment_vars.locals,
-)

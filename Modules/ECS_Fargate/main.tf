@@ -1,4 +1,5 @@
 #----------------- Task Execution Role -----------------#
+
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${var.project}-${var.environment}-ecs-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
@@ -66,10 +67,8 @@ resource "aws_iam_role_policy" "s3_bucket_access_policy" {
   })
 }
 
-
-
-
 #----------------- ECS Fargate -----------------#
+
 resource "aws_ecs_cluster" "aws-ecs-cluster" {
   name = "${var.project}-${var.environment}-cluster"
   tags = {
@@ -78,7 +77,6 @@ resource "aws_ecs_cluster" "aws-ecs-cluster" {
     Environment = "${var.environment}"
   }
 }
-
 
 resource "aws_ecs_task_definition" "aws-ecs-task" {
   family                   = "${var.project}-${var.environment}-task-definiton"
@@ -133,7 +131,6 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
 
 }
 
-
 resource "aws_ecs_service" "aws-ecs-service" {
   name                 = "${var.project}-${var.environment}-service"
   cluster              = aws_ecs_cluster.aws-ecs-cluster.id
@@ -164,8 +161,6 @@ resource "aws_ecs_service" "aws-ecs-service" {
 
 }
 
-
-
 #-------------- ECS service targetting -----------------------
 
 resource "aws_appautoscaling_target" "ecs_target" {
@@ -176,8 +171,6 @@ resource "aws_appautoscaling_target" "ecs_target" {
   service_namespace  = "ecs"
 
 }
-
-
 
 #-------------- ECS service auto scaling policy -----------------------
 

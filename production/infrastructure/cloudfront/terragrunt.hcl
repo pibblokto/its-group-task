@@ -1,17 +1,24 @@
 include "root" {
-  path = find_in_parent_folders()
+  path           = find_in_parent_folders()
   expose         = true
   merge_strategy = "deep"
 }
-
 
 terraform {
   source = "${dirname(find_in_parent_folders())}//Modules//AWS_CloudFront"
 }
 
-include "envcommon" {
-  path = "${dirname(find_in_parent_folders())}//env_common//project_envs.hcl"
-  expose = true
+locals {
+  # Automatically load environment-level variables
+  environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+  region_vars      = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  config_vars      = read_terragrunt_config(find_in_parent_folders("config.hcl"))
+
+  # Extract out common variables for reuse
+  project         = local.environment_vars.locals.project
+  environment     = local.environment_vars.locals.environment
+  aws_region      = local.region_vars.locals.aws_region
+  certificate_arn = local.config_vars.locals.certificate_arn
 }
 
 include "alb" {
@@ -20,15 +27,19 @@ include "alb" {
   merge_strategy = "deep"
 }
 
-
 inputs = {
+
+  project         = "${local.project}"
+  environment     = "${local.environment}"
+  aws_region      = "${local.aws_region}"
+  certificate_arn = "${local.certificate_arn}"
 
   #------------- CloudFront Cache Policy -------------# 
 
-  policy_comment = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-cache-policy"
-  policy_min_ttl = 1
+  policy_comment     = "${local.project}-${local.environment}-cache-policy"
+  policy_min_ttl     = 1
   policy_default_ttl = 50
-  policy_max_ttl = 100
+  policy_max_ttl     = 100
 
   enable_accept_encoding_brotli = true
   enable_accept_encoding_gzip   = true
@@ -46,17 +57,16 @@ inputs = {
     "Accept-Datetime"
   ]
 
-
   #------------- CloudFront Distribution -------------#
 
-  domain_name                    = dependency.alb.outputs.lb_dns_name
+  domain_name                    = "${dependency.alb.outputs.lb_dns_name}"
   http_port                      = 80
   https_port                     = 443
   origin_protocol_policy         = "http-only"
   origin_ssl_protocols           = ["TLSv1.2"]
   enabled                        = true
   is_ipv6_enabled                = true
-  comment                        = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-distribution"
+  comment                        = "${local.project}-${local.environment}-distribution"
   compress                       = true
   default_viewer_protocol_policy = "redirect-to-https"
   default_allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -78,6 +88,7 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//datasources",
     "..//vpc",
     "..//alb_security_group",
     "..//alb",

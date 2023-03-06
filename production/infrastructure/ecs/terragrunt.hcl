@@ -1,16 +1,24 @@
 include "root" {
-  path = find_in_parent_folders()
+  path           = find_in_parent_folders()
   expose         = true
   merge_strategy = "deep"
 }
-
 
 terraform {
   source = "${dirname(find_in_parent_folders())}//Modules//ECS_Fargate"
 }
 
-include "envcommon" {
-  path = "${dirname(find_in_parent_folders())}//env_common//project_envs.hcl"
+locals {
+  # Automatically load environment-level variables
+  environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+  region_vars      = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  config_vars      = read_terragrunt_config(find_in_parent_folders("config.hcl"))
+
+  # Extract out common variables for reuse
+  project     = local.environment_vars.locals.project
+  environment = local.environment_vars.locals.environment
+  aws_region  = local.region_vars.locals.aws_region
+  account_id  = local.config_vars.locals.account_id
 }
 
 include "vpc" {
@@ -39,33 +47,36 @@ include "s3" {
 
 inputs = {
 
+  project     = "${local.project}"
+  environment = "${local.environment}"
+  aws_region  = "${local.aws_region}"
+  account_id  = "${local.account_id}"
+
   # S3 Bucket
-  s3_bucket_arn = dependency.s3.outputs.s3_bucket_arn
+  s3_bucket_arn = "${dependency.s3.outputs.s3_bucket_arn}"
 
   # Task Definition
-  launch_type = "FARGATE"
-  network_mode = "awsvpc"
-  cpu = "256"
-  memory = "512"
-  ecr_uri = "piblokto/django_app:latest"
+  launch_type         = "FARGATE"
+  network_mode        = "awsvpc"
+  cpu                 = "256"
+  memory              = "512"
+  ecr_uri             = "piblokto/django_app:latest"
   main_container_name = "django-app"
   main_container_port = 8000
 
   # ECS Service
-  scheduling_strategy = "REPLICA"
-  desired_count = 2
-  subnets = dependency.vpc.outputs.private_subnets
-  ecs_security_groups = [dependency.app_security_group.outputs.security_group_id]
-  alb_target_group_arn = dependency.alb.outputs.target_group_arns[0]
+  scheduling_strategy  = "REPLICA"
+  desired_count        = 2
+  subnets              = "${dependency.vpc.outputs.private_subnets}"
+  ecs_security_groups  = ["${dependency.app_security_group.outputs.security_group_id}"]
+  alb_target_group_arn = "${dependency.alb.outputs.target_group_arns[0]}"
 
   # ECS Service Autoscaling
-  max_capacity = 3
-  min_capacity = 2
+  max_capacity               = 3
+  min_capacity               = 2
   appautoscaling_policy_type = "TargetTrackingScaling"
-  target_value = 70
-  predefined_metric_type = "ECSServiceAverageCPUUtilization"
-
-
+  target_value               = 70
+  predefined_metric_type     = "ECSServiceAverageCPUUtilization"
 
 }
 
@@ -73,6 +84,7 @@ dependencies {
 
   paths = [
     "..//s3",
+    "..//datasources",
     "..//vpc",
     "..//alb_security_group",
     "..//app_security_group",

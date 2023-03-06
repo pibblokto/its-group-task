@@ -1,18 +1,20 @@
 include "root" {
-  path = find_in_parent_folders()
+  path           = find_in_parent_folders()
   expose         = true
   merge_strategy = "deep"
 }
-
 
 terraform {
   source = "github.com/terraform-aws-modules/terraform-aws-security-group//.?ref=v4.17.1"
 }
 
+locals {
+  # Automatically load environment-level variables
+  environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
-include "envcommon" {
-  path = "${dirname(find_in_parent_folders())}//env_common//project_envs.hcl"
-  expose = true
+  # Extract out common variables for reuse
+  project     = local.environment_vars.locals.project
+  environment = local.environment_vars.locals.environment
 }
 
 include "vpc" {
@@ -30,17 +32,18 @@ include "alb_security_group" {
 
 inputs = {
   
-  vpc_id = dependency.vpc.outputs.vpc_id
-  name = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-app-sg"
+  vpc_id = "${dependency.vpc.outputs.vpc_id}"
+
+  name            = "${local.project}-${local.environment}-app-sg"
   use_name_prefix = true
-  description = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-app-sg"
+  description     = "${local.project}-${local.environment}-app-sg"
 
   ingress_with_source_security_group_id = [
     {
-      from_port   = 8000
-      to_port     = 8000
-      protocol    = "tcp"
-      description = "Allow all inbound traffic from ALB SG"
+      from_port                = 8000
+      to_port                  = 8000
+      protocol                 = "tcp"
+      description              = "Allow all inbound traffic from ALB SG"
       source_security_group_id = "${dependency.alb_security_group.outputs.security_group_id}"
     },
   ]
@@ -57,9 +60,9 @@ inputs = {
 
 
   tags = {
-    Name = "${include.envcommon.locals.environment_vars.locals.project}-${include.envcommon.locals.environment_vars.locals.environment}-app-sg"
-    Project = "${include.envcommon.locals.environment_vars.locals.project}"
-    Environment = "${include.envcommon.locals.environment_vars.locals.environment}"
+    Name        = "${local.project}-${local.environment}-app-sg"
+    Project     = "${local.project}"
+    Environment = "${local.environment}"
   }
   
 }
@@ -67,6 +70,7 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//datasources",
     "..//vpc",
     "..//alb_security_group"
   ]

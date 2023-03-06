@@ -10,9 +10,6 @@ variable "environment" {
   default     = ""
 }
 
-
-
-
 #------------- CloudFront Cache Policy -------------#
 
 variable "policy_comment" {
@@ -86,9 +83,6 @@ variable "enable_accept_encoding_gzip" {
   type        = bool
   default     = true
 }
-
-
-
 
 #------------- CloudFront Distribution -------------#
 
