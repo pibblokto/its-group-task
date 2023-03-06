@@ -55,7 +55,7 @@
   
 * In our case, we used `project = team-task` & `environment = production` in `production/infrastructure/common_vars.hcl`, so the list with parameters in Parameter Store will look like this (don't forget that the `team-task-production_database_url` parameter will be created separately during infrastructure provisioning):
 
-![](./images/parameter_store_example.jpg)
+![](./images/parameter_store_example_list.jpg)
 
 # ⚖️ Application Load Balancer ⚖️
 * Elastic Load Balancing automatically distributes incoming traffic across multiple `Fargate Containers`. It monitors the health of its registered targets and routes traffic only to the healthy targets. Elastic Load Balancing scales your load balancer as your incoming traffic changes. It can automatically scale to the vast majority of workloads.
