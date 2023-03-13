@@ -46,6 +46,7 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//ecr",
     "..//datasources",
     "..//vpc",
     "..//alb_security_group",

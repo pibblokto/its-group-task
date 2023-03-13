@@ -1,6 +1,6 @@
 locals {
 
-  project = "team-task"
-  environment = "production"
+  project = "itssite"
+  environment = "staging"
   
 }

@@ -45,6 +45,12 @@ include "s3" {
   merge_strategy = "deep"
 }
 
+include "cloudfront" {
+  path           = "..//dependency_blocks/cloudfront.hcl"
+  expose         = true
+  merge_strategy = "deep"
+}
+
 inputs = {
 
   project     = "${local.project}"
@@ -54,6 +60,9 @@ inputs = {
 
   # S3 Bucket
   s3_bucket_arn = "${dependency.s3.outputs.s3_bucket_arn}"
+
+  # CloudFront
+  distribution_id = "${dependency.cloudfront.outputs.distribution_id}"
 
   # Task Definition
   launch_type         = "FARGATE"
@@ -83,6 +92,7 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//ecr",
     "..//s3",
     "..//datasources",
     "..//vpc",
@@ -91,6 +101,7 @@ dependencies {
     "..//db_security_group",
     "..//alb",
     "..//db_instance",
-    "..//parameter_store"
+    "..//parameter_store",
+    "..//cloudfront"
   ]
 }

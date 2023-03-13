@@ -34,7 +34,7 @@ inputs = {
   vpc_id = "${dependency.vpc.outputs.vpc_id}"
 
   name            = "${local.project}-${local.environment}-db-sg"
-  use_name_prefix = true
+  use_name_prefix = false
   description     = "${local.project}-${local.environment}-db-sg"
 
   ingress_with_source_security_group_id = [
@@ -68,6 +68,8 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//ecr",
+    "..//s3",
     "..//datasources",
     "..//vpc",
     "..//alb_security_group",

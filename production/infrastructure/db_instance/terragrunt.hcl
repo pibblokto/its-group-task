@@ -41,16 +41,18 @@ inputs = {
   create_db_option_group = false
 
   # Parameter Group 
-  create_db_parameter_group   = true
-  parameter_group_name        = "${local.project}-${local.environment}-parameter-group"
-  parameter_group_description = "${local.project}-${local.environment}-parameter-group"
-  family                      = "postgres14"
+  create_db_parameter_group       = true
+  parameter_group_name            = "${local.project}-${local.environment}-parameter-group"
+  parameter_group_description     = "${local.project}-${local.environment}-parameter-group"
+  family                          = "postgres14"
+  parameter_group_use_name_prefix = false
 
   # Subnet Group
-  create_db_subnet_group      = true
-  db_subnet_group_name        = "${local.project}-${local.environment}-subnet-group"
-  db_subnet_group_description = "${local.project}-${local.environment}-subnet-group"
-  subnet_ids                  = "${dependency.vpc.outputs.private_subnets}"
+  create_db_subnet_group          = true
+  db_subnet_group_name            = "${local.project}-${local.environment}-subnet-group"
+  db_subnet_group_description     = "${local.project}-${local.environment}-subnet-group"
+  subnet_ids                      = "${dependency.vpc.outputs.private_subnets}"
+  db_subnet_group_use_name_prefix = false
 
   # DB Instance
   identifier                          = "${local.project}-${local.environment}-database" 
@@ -111,6 +113,8 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//ecr",
+    "..//s3",  
     "..//datasources",
     "..//vpc",
     "..//alb_security_group",

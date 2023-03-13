@@ -30,6 +30,14 @@ variable "s3_bucket_arn" {
   default     = null
 }
 
+#---------- CloudFront ----------#
+
+variable "distribution_id" {
+  description = "CloudFront Distribution ID"
+  type        = string
+  default     = null
+}
+
 #---------- Task Definition ----------#
 
 variable "launch_type" {

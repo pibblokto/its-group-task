@@ -19,7 +19,7 @@ locals {
 
 inputs = {
 
-  bucket_prefix = "${local.project}-${local.environment}-bucket-"
+  bucket        = "${local.project}-${local.environment}-static-content"
   acl           = "private"
   versioning    = {
     enabled = true

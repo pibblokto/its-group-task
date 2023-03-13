@@ -10,33 +10,39 @@ variable "environment" {
   default     = ""
 }
 
-#------------- CloudFront Cache Policy -------------#
+variable "account_id" {
+  description = "AWS account ID to provision infrastructure"
+  type        = string
+  default     = null
+}
 
-variable "policy_comment" {
+#------------- CloudFront ALB Cache Policy -------------#
+
+variable "alb_policy_comment" {
   description = "Any comment about cache policy"
   type        = string
   default     = "Module-generated policy"
 }
 
-variable "policy_min_ttl" {
+variable "alb_policy_min_ttl" {
   description = "The minimum amount of time, in seconds, that you want objects to stay in the CloudFront cache before CloudFront sends another request to the origin to see if the object has been updated"
   type        = number
-  default     = 0
+  default     = 1
 }
 
-variable "policy_default_ttl" {
+variable "alb_policy_default_ttl" {
   description = "The default amount of time, in seconds, that you want objects to stay in the CloudFront cache before CloudFront sends another request to the origin to see if the object has been updated"
   type        = number
-  default     = 50
+  default     = 86400
 }
 
-variable "policy_max_ttl" {
+variable "alb_policy_max_ttl" {
   description = "The maximum amount of time, in seconds, that objects stay in the CloudFront cache before CloudFront sends another request to the origin to see if the object has been updated"
   type        = number
-  default     = 100
+  default     = 31536000
 }
 
-variable "header_items" {
+variable "alb_header_items" {
   description = "Choose headers to cache. MAXIMUM IS 10"
   type        = list(string)
   default = [
@@ -72,13 +78,52 @@ variable "header_items" {
   ]
 }
 
-variable "enable_accept_encoding_brotli" {
+variable "alb_enable_accept_encoding_brotli" {
   description = "A flag that can affect whether the Accept-Encoding HTTP header is included in the cache key and included in requests that CloudFront sends to the origin"
   type        = bool
   default     = true
 }
 
-variable "enable_accept_encoding_gzip" {
+variable "alb_enable_accept_encoding_gzip" {
+  description = "A flag that can affect whether the Accept-Encoding HTTP header is included in the cache key and included in requests that CloudFront sends to the origin"
+  type        = bool
+  default     = true
+}
+
+
+#------------- CloudFront S3 Cache Policy -------------#
+
+variable "s3_policy_comment" {
+  description = "Any comment about cache policy"
+  type        = string
+  default     = "Module-generated policy"
+}
+
+variable "s3_policy_min_ttl" {
+  description = "The minimum amount of time, in seconds, that you want objects to stay in the CloudFront cache before CloudFront sends another request to the origin to see if the object has been updated"
+  type        = number
+  default     = 1
+}
+
+variable "s3_policy_default_ttl" {
+  description = "The default amount of time, in seconds, that you want objects to stay in the CloudFront cache before CloudFront sends another request to the origin to see if the object has been updated"
+  type        = number
+  default     = 86400
+}
+
+variable "s3_policy_max_ttl" {
+  description = "The maximum amount of time, in seconds, that objects stay in the CloudFront cache before CloudFront sends another request to the origin to see if the object has been updated"
+  type        = number
+  default     = 31536000
+}
+
+variable "s3_enable_accept_encoding_brotli" {
+  description = "A flag that can affect whether the Accept-Encoding HTTP header is included in the cache key and included in requests that CloudFront sends to the origin"
+  type        = bool
+  default     = true
+}
+
+variable "s3_enable_accept_encoding_gzip" {
   description = "A flag that can affect whether the Accept-Encoding HTTP header is included in the cache key and included in requests that CloudFront sends to the origin"
   type        = bool
   default     = true
@@ -86,57 +131,64 @@ variable "enable_accept_encoding_gzip" {
 
 #------------- CloudFront Distribution -------------#
 
-variable "domain_name" {
+# ALB Origin
+
+variable "alb_domain_name" {
   description = "Domain name for origin"
   type        = string
   default     = null
 }
 
-variable "http_port" {
+variable "alb_http_port" {
   description = "Origin HTTP port"
   type        = number
   default     = 80
 }
 
-variable "https_port" {
+variable "alb_https_port" {
   description = "Origin HTTPS port"
   type        = number
   default     = 443
 }
 
-variable "origin_protocol_policy" {
+variable "alb_origin_protocol_policy" {
   description = "Specifies the minimum SSL/TLS protocol that CloudFront uses when connecting to your origin over HTTPS"
   type        = string
   default     = "http-only"
   validation {
-    condition     = contains(["http-only", "match-viewer", "https-only"], var.origin_protocol_policy)
+    condition     = contains(["http-only", "match-viewer", "https-only"], var.alb_origin_protocol_policy)
     error_message = "Valid values for var: origin_protocol_policy are (http-only, match-viewer, https-only)."
   }
 }
 
-variable "origin_ssl_protocols" {
+variable "alb_origin_ssl_protocols" {
   description = "Minimum origin SSL protocol"
   type        = list(string)
   default     = ["TLSv1.2"]
 }
 
-variable "enabled" {
-  description = "Whether the distribution is enabled to accept end user requests for content"
-  type        = bool
-  default     = true
-}
 
-variable "is_ipv6_enabled" {
-  description = "Whether the IPv6 is enabled for the distribution"
-  type        = bool
-  default     = false
-}
+# S3 Origin
 
-variable "comment" {
-  description = "Any comment about distribution"
+variable "s3_domain_name" {
+  description = "Domain name for origin"
   type        = string
-  default     = "Module-generated distribution"
+  default     = null
 }
+
+variable "s3_bucket_id" {
+  description = "S3 Bucket ID"
+  type        = string
+  default     = null
+}
+
+variable "s3_bucket_arn" {
+  description = "S3 Bucket ARN"
+  type        = string
+  default     = null
+}
+
+# Default Cache Behaviour
 
 variable "compress" {
   description = "Whether you want CloudFront to automatically compress content for web requests"
@@ -178,6 +230,76 @@ variable "distribution_max_ttl" {
   description = "The maximum amount of time (in seconds) that an object is in a CloudFront cache before CloudFront forwards another request to your origin to determine whether the object has been updated. Only effective in the presence of `Cache-Control max-age`, `Cache-Control s-maxage`, and `Expires` headers"
   type        = number
   default     = 86400
+}
+
+# Ordered Cache Behaviour
+
+variable "path_pattern" {
+  description = "Pattern that specifies which requests you want this cache behavior to apply to"
+  type        = string
+  default     = "*"
+}
+
+variable "ordered_compress" {
+  description = "Whether you want CloudFront to automatically compress content for web requests"
+  type        = bool
+  default     = true
+}
+
+variable "ordered_viewer_protocol_policy" {
+  description = "Use this element to specify the protocol that users can use to access the files in the origin specified by TargetOriginId when a request matches the path pattern in PathPattern"
+  type        = string
+  default     = "allow-all"
+}
+
+variable "ordered_allowed_methods" {
+  description = "List of allowed HTTP methods"
+  type        = list(string)
+  default     = ["GET", "HEAD", "OPTIONS"]
+}
+
+variable "ordered_cached_methods" {
+  description = "Controls whether CloudFront caches the response to requests using the specified HTTP methods"
+  type        = list(string)
+  default     = ["GET", "HEAD", "OPTIONS"]
+}
+
+variable "ordered_min_ttl" {
+  description = "The minimum amount of time that you want objects to stay in CloudFront caches before CloudFront queries your origin to see whether the object has been updated"
+  type        = number
+  default     = 0
+}
+
+variable "ordered_default_ttl" {
+  description = "The default amount of time (in seconds) that an object is in a CloudFront cache before CloudFront forwards another request in the absence of an `Cache-Control max-age` or `Expires` header"
+  type        = number
+  default     = 86400
+}
+
+variable "ordered_max_ttl" {
+  description = "The maximum amount of time (in seconds) that an object is in a CloudFront cache before CloudFront forwards another request to your origin to determine whether the object has been updated. Only effective in the presence of `Cache-Control max-age`, `Cache-Control s-maxage`, and `Expires` headers"
+  type        = number
+  default     = 31536000
+}
+
+# The rest of the CloudFront Distribution variables
+
+variable "enabled" {
+  description = "Whether the distribution is enabled to accept end user requests for content"
+  type        = bool
+  default     = true
+}
+
+variable "is_ipv6_enabled" {
+  description = "Whether the IPv6 is enabled for the distribution"
+  type        = bool
+  default     = false
+}
+
+variable "comment" {
+  description = "Any comment about distribution"
+  type        = string
+  default     = "Module-generated distribution"
 }
 
 variable "aliases" {

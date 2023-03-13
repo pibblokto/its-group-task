@@ -28,7 +28,7 @@ inputs = {
   vpc_id = "${dependency.vpc.outputs.vpc_id}"
 
   name            = "${local.project}-${local.environment}-alb-sg"
-  use_name_prefix = true
+  use_name_prefix = false
   description     = "${local.project}-${local.environment}-alb-sg"
 
   ingress_with_cidr_blocks = [
@@ -69,6 +69,8 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//ecr",
+    "..//s3",
     "..//datasources",
     "..//vpc"
   ]

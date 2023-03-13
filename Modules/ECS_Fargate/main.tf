@@ -24,6 +24,8 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# Parameter Store Access
+
 resource "aws_iam_role_policy" "parameter_store_access_policy" {
   name = "parameter_store_access"
   role = aws_iam_role.ecs_task_execution_role.id
@@ -38,12 +40,13 @@ resource "aws_iam_role_policy" "parameter_store_access_policy" {
         Effect = "Allow"
         Resource = [
           "arn:aws:ssm:${var.aws_region}:${var.account_id}:parameter/${var.project}-${var.environment}_*"
-
         ]
       },
     ]
   })
 }
+
+# S3 Bucket Access
 
 resource "aws_iam_role_policy" "s3_bucket_access_policy" {
   name = "s3_bucket_access_policy"
@@ -61,6 +64,28 @@ resource "aws_iam_role_policy" "s3_bucket_access_policy" {
         Resource = [
           "${var.s3_bucket_arn}",
           "${var.s3_bucket_arn}/*"
+        ]
+      },
+    ]
+  })
+}
+
+# CloudFront Distribution Access
+
+resource "aws_iam_role_policy" "cloudfront_access_policy" {
+  name = "cloudfront_access_policy"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "cloudfront:*",
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:cloudfront::${var.account_id}:distribution/${var.distribution_id}"
         ]
       },
     ]

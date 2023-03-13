@@ -78,6 +78,8 @@ inputs = {
 dependencies {
 
   paths = [
+    "..//ecr",
+    "..//s3",
     "..//datasources"
   ]
 }

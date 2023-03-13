@@ -1,7 +1,19 @@
-#------------- CloudFront Cache Policy -------------#
+#------------- CloudFront ALB Cache Policy -------------#
 
-output "cache_policy_id" {
-  value = aws_cloudfront_cache_policy.example.id
+output "alb_cache_policy_id" {
+  value = aws_cloudfront_cache_policy.alb.id
+}
+
+#------------- S3 Origin Access Control -------------#
+
+output "s3_origin_access_control_id" {
+  value = aws_cloudfront_origin_access_control.s3_access_control.id
+}
+
+#------------- CloudFront S3 Cache Policy -------------#
+
+output "s3_cache_policy_id" {
+  value = aws_cloudfront_cache_policy.s3.id
 }
 
 #------------- CloudFront Distribution -------------#
